@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7c5cd4">
+<title>Anime Partner</title>
+<style>
+:root{
+  --bg:#faf6f2; --card:#ffffff; --text:#242030; --sub:#726b7a;
+  --accent:#e8536e; --accent2:#7c5cd4; --border:#ece3e8; --green:#3fb371; --greenbg:#e6f7ee;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#171320; --card:#231d30; --text:#f2ecf7; --sub:#b3a9c2;
+    --accent:#ff7089; --accent2:#a58bef; --border:#362c46; --green:#4fd68a; --greenbg:#173a2a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171320; --card:#231d30; --text:#f2ecf7; --sub:#b3a9c2;
+  --accent:#ff7089; --accent2:#a58bef; --border:#362c46; --green:#4fd68a; --greenbg:#173a2a;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding:56px 16px 90px;min-height:100%;}
+.topbar{position:fixed;top:0;left:0;right:0;padding-top:env(safe-area-inset-top,0px);background:var(--card);border-bottom:1px solid var(--border);display:none;align-items:center;justify-content:space-between;padding-left:16px;padding-right:16px;height:56px;z-index:20;}
+.topbar.show{display:flex;}
+.topbar .logo{font-weight:600;font-size:0.95rem;}
+.topbar .icons button{background:none;border:none;font-size:1.2rem;margin-left:10px;cursor:pointer;}
+.screen{display:none;max-width:480px;margin:0 auto;padding-bottom:96px;}
+.screen.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+h1{font-size:1.6rem;margin:6px 0 2px;text-align:center;}
+h2{font-size:1.15rem;margin:0 0 14px;}
+p.sub{color:var(--sub);text-align:center;margin:0 0 22px;font-size:0.92rem;}
+label{font-size:0.85rem;color:var(--sub);display:block;margin:14px 0 6px;}
+input[type=text],input[type=number]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;}
+.btn{width:100%;padding:13px;border:none;border-radius:24px;margin-top:22px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;font-size:1rem;font-weight:600;cursor:pointer;}
+.btn.ghost{background:none;border:1px solid var(--border);color:var(--text);}
+.err{color:var(--accent);font-size:0.85rem;margin-top:8px;display:none;}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.choice{padding:16px 10px;border-radius:14px;border:1px solid var(--border);background:var(--card);text-align:center;cursor:pointer;font-size:0.95rem;}
+.choice.big{grid-column:1/-1;padding:22px;font-size:1.05rem;font-weight:600;}
+.progress-dots{display:flex;gap:6px;justify-content:center;margin-bottom:18px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.dot.active{background:var(--accent);}
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:0.85rem;cursor:pointer;}
+.chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+.cover{width:100%;height:80px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;margin-bottom:10px;}
+.card h3{margin:0 0 2px;font-size:1.05rem;}
+.tags{margin-bottom:6px;}
+.tag{display:inline-block;font-size:0.68rem;color:var(--accent2);border:1px solid var(--accent2);padding:2px 7px;border-radius:10px;margin-right:4px;}
+.acclaim{display:inline-block;font-size:0.68rem;color:var(--green);border:1px solid var(--green);padding:2px 7px;border-radius:10px;margin-bottom:6px;}
+.meta{font-size:0.76rem;color:var(--sub);margin-bottom:6px;}
+.desc{font-size:0.88rem;line-height:1.5;margin-bottom:10px;}
+.card-actions{display:flex;gap:8px;}
+.card-actions button{flex:1;padding:9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.78rem;cursor:pointer;}
+.card-actions .add{background:var(--accent);color:#fff;border:none;}
+.card-actions a{flex:1;padding:9px;border-radius:20px;border:1px solid var(--border);text-align:center;color:var(--text);font-size:0.78rem;text-decoration:none;}
+.navbar{position:fixed;bottom:0;left:0;right:0;display:none;background:var(--card);border-top:1px solid var(--border);padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));}
+.navbar.show{display:flex;}
+.navbtn{flex:1;text-align:center;background:none;border:none;color:var(--sub);font-size:0.75rem;cursor:pointer;}
+.navbtn.active{color:var(--accent);font-weight:600;}
+.ep-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0;}
+.ep{aspect-ratio:1;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.68rem;cursor:pointer;background:var(--card);}
+.ep.done{background:var(--green);color:#fff;border-color:var(--green);}
+.bar{height:8px;border-radius:6px;background:var(--border);overflow:hidden;margin:8px 0;}
+.bar-fill{height:100%;background:var(--green);}
+.empty{text-align:center;color:var(--sub);margin-top:40px;font-size:0.9rem;}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.top a{font-size:0.8rem;color:var(--sub);cursor:pointer;}
+.foot{text-align:center;color:var(--sub);font-size:0.72rem;margin-top:26px;line-height:1.6;}
+.note-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:18px;color:#fff;font-size:0.85rem;margin:0 8px 8px 0;}
+.note-chip span.x{cursor:pointer;opacity:0.8;font-weight:700;}
+.note-row{display:flex;gap:8px;margin-bottom:16px;}
+.note-row input{flex:1;}
+.note-row button{padding:0 16px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-weight:600;}
+.bubble{position:fixed;bottom:80px;right:16px;background:var(--card);border:1px solid var(--accent);color:var(--text);padding:12px 16px;border-radius:20px;font-size:0.82rem;box-shadow:0 4px 14px rgba(0,0,0,0.15);display:none;align-items:center;gap:8px;z-index:30;cursor:pointer;max-width:240px;}
+.bubble.show{display:flex;}
+.bubble .x{color:var(--sub);font-weight:700;cursor:pointer;padding-left:4px;}
+.qopt{padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--card);margin-bottom:10px;cursor:pointer;font-size:0.92rem;}
+.qopt.correct{background:var(--greenbg);border-color:var(--green);}
+.qopt.wrong{background:#fbe4e4;border-color:var(--accent);}
+.scorebox{text-align:center;padding:30px 0;}
+.scorebox .num{font-size:2.8rem;font-weight:700;color:var(--accent);}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:0.82rem;z-index:50;display:none;max-width:85%;text-align:center;}
+.toast.show{display:block;}
+.hero{text-align:center;padding-top:36px}
+.hero img{width:124px;height:124px;border-radius:28px;margin-bottom:18px;box-shadow:0 8px 24px rgba(124,92,212,.35)}
+.hero h1{font-size:2.1rem;opacity:0;animation:fade .9s ease forwards}
+.hero .tagline{opacity:0;animation:fade 1s ease 1.1s forwards;color:var(--sub);font-size:1.02rem;margin:6px 0 28px}
+.hero .btn{opacity:0;animation:fade .6s ease 2s forwards}
+.terms{max-height:46vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;font-size:.85rem;line-height:1.55}
+.terms h4{margin:12px 0 4px}.terms h4:first-child{margin-top:0}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.88rem;color:var(--text)}
+.check input{width:20px;height:20px;margin-top:1px;accent-color:var(--accent);flex:none}
+.btn:disabled{opacity:.45}
+.menu-item{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);background:var(--card);border-radius:14px;margin-bottom:10px;font-size:.95rem;cursor:pointer;text-decoration:none;color:var(--text)}
+.menu-item .ic{font-size:1.3rem}
+.seg{display:flex;gap:8px;margin:6px 0 4px}
+.seg .opt{flex:1;padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--card);text-align:center;font-size:.85rem;cursor:pointer}
+.seg .opt.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;font-size:.92rem}
+select,input[type=time]{padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;width:100%}
+details{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+summary{font-weight:600;cursor:pointer;font-size:.92rem}
+details p{margin:10px 0 0;font-size:.88rem;line-height:1.5;color:var(--sub)}
+.badge{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-bottom:6px}
+.badge.free{color:var(--green);border:1px solid var(--green)}
+.badge.paid{color:var(--accent);border:1px solid var(--accent)}
+.linkbtn{display:block;text-align:center;padding:10px;border-radius:20px;background:var(--accent);color:#fff;text-decoration:none;font-size:.85rem;margin-top:8px}
+.linkbtn.ghost{background:none;color:var(--text);border:1px solid var(--border)}
+.stars{display:flex;gap:6px;font-size:1.9rem;margin:8px 0}
+.stars span{cursor:pointer;opacity:.3;color:#e0a02e}.stars span.on{opacity:1}
+textarea{width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;font-family:inherit}
+.updatebar{position:fixed;top:56px;left:0;right:0;background:var(--accent2);color:#fff;padding:10px 16px;font-size:.82rem;display:none;z-index:19;align-items:center;justify-content:space-between;gap:10px}
+.updatebar.show{display:flex}.updatebar a{color:#fff;font-weight:700}
+.streak{display:inline-block;background:var(--greenbg);color:var(--green);border-radius:14px;padding:4px 10px;font-size:.8rem;margin:0 6px 12px 0}
+.matchcard{text-align:center}.matchcard .big{font-size:1.4rem;font-weight:700;color:var(--accent);margin:4px 0}
+.navbtn{font-size:.68rem}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes popIn{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes tick{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes grow{from{width:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.22)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.card{animation:cardIn .45s ease both}
+.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.18s}.card:nth-child(5){animation-delay:.24s}.card:nth-child(n+6){animation-delay:.3s}
+.btn,.choice,.chip,.qopt,.menu-item,.opt,.linkbtn,.card-actions button,.card-actions a{transition:transform .12s ease,background .2s,border-color .2s,opacity .2s}
+.btn:active,.choice:active,.chip:active,.qopt:active,.menu-item:active,.opt:active,.linkbtn:active,.card-actions button:active{transform:scale(.96)}
+.bar-fill{animation:grow .8s ease;transition:width .5s ease}
+.ep.done{animation:tick .3s ease}
+.qopt.correct{animation:pop .35s ease}.qopt.wrong{animation:shake .35s ease}
+.bubble.show{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+.navbtn{transition:color .2s,transform .2s}.navbtn.active{transform:translateY(-2px)}
+.hero img{animation:popIn .8s cubic-bezier(.34,1.56,.64,1) both,float 3.5s ease-in-out .9s infinite}
+.confetti{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:60}
+.confetti i{position:absolute;top:-16px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards}
+.reading{text-align:center;padding:70px 0;color:var(--sub)}.reading .orb{font-size:3.6rem;animation:pulse 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.cover{height:150px;background-size:cover;background-position:center 22%}
+.cover.shimmer{background-image:linear-gradient(110deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.35) 50%,rgba(255,255,255,0) 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.cover.has-img{color:transparent}
+.search{margin-bottom:12px}
+.aod{display:flex;gap:12px;align-items:center;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:16px;padding:12px;margin-bottom:14px;cursor:pointer}
+.aod .thumb{width:54px;height:76px;border-radius:10px;background-size:cover;background-position:center;background-color:rgba(255,255,255,.25);flex:none}
+.aod small{opacity:.9;display:block;font-size:.72rem}.aod b{font-size:1rem}
+.choice.other{border-style:dashed;color:var(--sub)}
+.tbar{height:6px;border-radius:4px;background:var(--border);overflow:hidden;margin:0 0 12px}
+#tfill{height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--accent2))}
+#triviaQ{white-space:pre-line;font-size:1.02rem;line-height:1.45}
+.combo{text-align:center;font-size:.82rem;color:var(--accent);min-height:18px;margin-bottom:6px;font-weight:600}
+.scratchwrap{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px}
+.scratchwrap canvas{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.badge2{padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--card);font-size:.72rem;opacity:.5;filter:grayscale(1)}
+.badge2.on{opacity:1;filter:none;border-color:var(--green)}
+.badge2 b{display:block;font-size:.82rem;margin-bottom:2px}
+.ach{position:fixed;top:64px;left:50%;transform:translate(-50%,-160%);background:var(--card);border:1px solid var(--green);color:var(--text);padding:10px 16px;border-radius:16px;z-index:70;font-size:.85rem;transition:transform .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:88%;text-align:center}
+.ach.show{transform:translate(-50%,0)}
+.spk{background:none;border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-size:.82rem;cursor:pointer;color:var(--text);float:right}
+.sparkle{position:absolute;font-size:1.3rem;animation:float 3s ease-in-out infinite;opacity:.85}
+.btn{background-size:200% 100%;animation:gradmove 6s ease infinite}
+@keyframes gradmove{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.hero{position:relative}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="logo">🎌 Anime Partner</div>
+  <div class="icons">
+    <button onclick="renderNotes();showScreen('s-notes')" aria-label="Notes">📝</button>
+    <button onclick="renderPhrases();showScreen('s-phrases')" aria-label="Phrases">🗾</button>
+    <button onclick="renderWatch();showScreen('s-watch')" aria-label="Watch">🌐</button>
+  </div>
+</div>
+<div class="updatebar" id="updatebar"></div>
+
+<div class="screen active" id="s-splash">
+  <div class="hero">
+    <span class="sparkle" style="left:6%;top:30px">✨</span><span class="sparkle" style="right:8%;top:70px;animation-delay:.8s">🌸</span><span class="sparkle" style="left:14%;top:230px;animation-delay:1.4s">⭐</span><span class="sparkle" style="right:12%;top:250px;animation-delay:2s">✨</span>
+    <img class="logo" alt="Anime Partner logo">
+    <h1>Anime Partner</h1>
+    <p class="tagline">Watch anime with your partner</p>
+    <button class="btn" onclick="showScreen('s-terms')">Get started</button>
+    <p class="foot">© 2026 Anime Partner. All rights reserved.<br>Developed by Shin.</p>
+  </div>
+</div>
+
+<div class="screen" id="s-terms">
+  <h2>Terms &amp; Conditions</h2>
+  <div class="terms" id="termsBox"></div>
+  <label class="check"><input type="checkbox" id="agree" onchange="document.getElementById('agreeBtn').disabled=!this.checked"><span>I am 18 or older and I agree to the Terms &amp; Conditions.</span></label>
+  <button class="btn" id="agreeBtn" disabled onclick="acceptTerms()">Agree &amp; continue</button>
+</div>
+
+<div class="screen" id="s-welcome">
+  <h1>🎌 Anime Partner</h1>
+  <p class="sub">Your personal anime recommendation companion</p>
+  <label>Your name</label>
+  <input type="text" id="inName" placeholder="Enter your name">
+  <label>Your age</label>
+  <input type="number" id="inAge" placeholder="Enter your age">
+  <p class="err" id="ageErr">Anime Partner is available for users aged 18 and older.</p>
+  <button class="btn" onclick="startApp()">Get started</button>
+  <p class="foot">© 2026 Anime Partner. All rights reserved.<br>Developed by Shin.</p>
+</div>
+
+<div class="screen" id="s-usertype">
+  <h2 id="greet"></h2>
+  <p class="sub">Are you new to anime, or have you watched before?</p>
+  <div class="choice-grid">
+    <div class="choice big" onclick="chooseType('beginner')">🌱 I'm a beginner</div>
+    <div class="choice big" onclick="chooseType('experienced')">🎬 I've watched anime before</div>
+  </div>
+</div>
+
+<div class="screen" id="s-more">
+  <h2>More</h2>
+  <div class="menu-item" onclick="renderSettings();showScreen('s-settings')"><span class="ic">⚙️</span>Settings</div>
+  <div class="menu-item" onclick="openMatch()"><span class="ic">💘</span>Anime wifey / husbando match</div>
+  <div class="menu-item" onclick="renderWatch();showScreen('s-watch')"><span class="ic">🌐</span>Where to watch (official sites)</div>
+  <div class="menu-item" onclick="showScreen('s-faq')"><span class="ic">❓</span>FAQ</div>
+  <div class="menu-item" onclick="showScreen('s-contact')"><span class="ic">📸</span>Contact us &amp; feedback</div>
+  <div class="menu-item" onclick="showScreen('s-termsview')"><span class="ic">📄</span>Terms &amp; Conditions</div>
+  <p class="foot">Anime Partner <span id="verText"></span><br>© 2026 Anime Partner. All rights reserved.<br>Developed by Shin.</p>
+</div>
+
+<div class="screen" id="s-settings"><h2>Settings</h2><div id="settingsBody"></div></div>
+<div class="screen" id="s-faq"><h2>FAQ</h2><div id="faqBody"></div></div>
+<div class="screen" id="s-termsview"><h2>Terms &amp; Conditions</h2><div class="terms" id="termsBox2" style="max-height:none"></div></div>
+
+<div class="screen" id="s-watch">
+  <h2>Where to watch</h2>
+  <p class="meta">Anime Partner doesn't host or stream anime. These are official services. Free ones show ads, and availability varies by country.</p>
+  <div id="watchList"></div>
+</div>
+
+<div class="screen" id="s-contact">
+  <h2>Contact us</h2>
+  <p class="meta" style="margin-bottom:14px">Questions, ideas, bugs or reviews - we'd love to hear from you.</p>
+  <a class="linkbtn" id="formBtn" style="display:none;margin-bottom:12px">📝 Open the review form</a>
+  <a class="menu-item" href="https://www.instagram.com/shin.ali96/"><span class="ic">📸</span>Message us on Instagram</a>
+  <div class="card">
+    <h3>Write a review</h3>
+    <div class="stars" id="stars"></div>
+    <textarea id="fbText" placeholder="Tell us what you think..."></textarea>
+    <button class="btn" style="margin-top:12px" onclick="copyFeedback()">Copy my review</button>
+    <a class="linkbtn ghost" href="https://www.instagram.com/shin.ali96/">Open Instagram to send it</a>
+    <p class="meta" style="margin-top:10px">Tap "Copy my review", then paste it in a message to us on Instagram. Following us is optional, but we'd appreciate it.</p>
+  </div>
+</div>
+
+<div class="screen" id="s-challenge">
+  <h2>Challenges</h2>
+  <div id="chalTop"></div>
+  <div class="card">
+    <h3>Start a new challenge</h3>
+    <label>Type</label>
+    <select id="chType" onchange="chTypeChange()"><option value="anime">Finish an anime</option><option value="episodes">Watch a number of episodes</option></select>
+    <div id="chAnimeWrap"><label>Anime from My List</label><select id="chAnime"></select></div>
+    <div id="chEpWrap" style="display:none"><label>Episodes to watch</label><input type="number" id="chEps" min="1" value="20"></div>
+    <label>Days to complete</label>
+    <input type="number" id="chDays" min="1" value="7">
+    <button class="btn" onclick="addChallenge()">Start challenge</button>
+  </div>
+  <div id="chalList"></div>
+  <h3 style="margin:18px 0 0">Achievements</h3>
+  <div class="badges" id="badges"></div>
+</div>
+
+<div class="screen" id="s-match">
+  <div id="matchIntro">
+    <h2>Your anime match</h2>
+    <p class="meta" style="margin-bottom:14px">Answer a few mind-game questions and we'll guess who your anime partner is. Just for fun, and adult characters only.</p>
+    <div class="choice-grid">
+      <div class="choice big" onclick="matchStart('F')">💕 Anime wifey</div>
+      <div class="choice big" onclick="matchStart('M')">💙 Anime husbando</div>
+      <div class="choice big" onclick="matchStart('B')">✨ Surprise me</div>
+    </div>
+  </div>
+  <div id="matchQuiz" style="display:none"><div class="progress-dots" id="matchDots"></div><h2 id="matchQ"></h2><div id="matchOpts"></div></div>
+  <div id="matchResult" style="display:none"></div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div class="progress-dots" id="quizDots"></div>
+  <h2 id="quizQ"></h2>
+  <div class="choice-grid" id="quizOptions"></div>
+</div>
+
+<div class="screen" id="s-experienced">
+  <h2>Which genres have you enjoyed before?</h2>
+  <p class="sub">Pick as many as you like</p>
+  <div class="chip-grid" id="genreChips"></div>
+  <button class="btn" onclick="submitExperienced()">Show my recommendations</button>
+</div>
+
+<div class="screen" id="s-results">
+  <div class="top"><h2>Recommended for you</h2><a onclick="reshuffle()">🔄 Refresh</a></div>
+  <input type="text" id="animeSearch" class="search" placeholder="🔍 Search anime, genre or studio" oninput="doSearch(this.value)">
+  <div id="aodBox"></div>
+  <div id="resultsList"></div>
+  <button class="btn ghost" onclick="shareApp()">📤 Share with your anime partner</button>
+</div>
+
+<div class="screen" id="s-tracker">
+  <h2>My anime tracker</h2>
+  <div id="trackerList"></div>
+</div>
+
+<div class="screen" id="s-notes">
+  <h2>My notes</h2>
+  <p class="sub">Add anime you've watched or your favorites</p>
+  <div class="note-row">
+    <input type="text" id="noteInput" placeholder="Type an anime name">
+    <button onclick="addNote()">Add</button>
+  </div>
+  <div id="notesList"></div>
+</div>
+
+<div class="screen" id="s-phrases">
+  <h2>Japanese anime phrases</h2>
+  <p class="sub">Common words and phrases you'll hear in anime</p>
+  <div class="row" style="margin-top:0"><input type="text" id="phraseSearch" placeholder="🔍 Search phrases" oninput="renderPhrases()" style="flex:1"><label class="check" style="margin:0;white-space:nowrap"><input type="checkbox" onchange="slowSpeech=this.checked"><span>🐢 Slow</span></label></div>
+  <div id="phrasesList"></div>
+</div>
+
+<div class="screen" id="s-quizmenu">
+  <h2>🎯 Anime knowledge</h2>
+  <p class="meta" style="margin-bottom:14px">10 questions against the clock. Faster answers earn more points and combos earn bonuses.</p>
+  <div class="choice-grid">
+    <div class="choice big" onclick="beginTrivia(1)">🌱 Easy</div>
+    <div class="choice big" onclick="beginTrivia(2)">🔥 Medium</div>
+    <div class="choice big" onclick="beginTrivia(3)">💀 Hard</div>
+    <div class="choice big" onclick="beginTrivia(0)">🎲 Mixed</div>
+  </div>
+  <p class="meta" id="quizBestLine" style="margin-top:14px;text-align:center"></p>
+</div>
+
+<div class="screen" id="s-trivia">
+  <div class="progress-dots" id="triviaDots"></div>
+  <div class="tbar"><div id="tfill"></div></div>
+  <div class="combo" id="tcombo"></div>
+  <h2 id="triviaQ"></h2>
+  <div id="triviaOptions"></div>
+</div>
+
+<div class="screen" id="s-trivia-result">
+  <div class="scorebox">
+    <p class="sub">Anime knowledge score</p>
+    <div class="num" id="scoreNum">0/10</div>
+    <p class="sub" id="scoreRank"></p>
+    <button class="btn" onclick="startTrivia()">Play again</button>
+    <button class="btn ghost" onclick="showScreen('s-results')">Back to Discover</button>
+  </div>
+</div>
+
+<div class="screen" id="s-seen">
+  <h2>Which of these have you watched?</h2>
+  <p class="meta" style="margin-bottom:10px">Tap the ones you've seen. We'll skip them and learn your taste.</p>
+  <input type="text" id="seenSearch" class="search" placeholder="🔍 Search" oninput="renderSeen()">
+  <div class="chip-grid" id="seenList"></div>
+  <button class="btn" onclick="finishSeen()">Show my recommendations</button>
+</div>
+
+<div class="navbar" id="navbar">
+  <button class="navbtn" id="navDiscover" onclick="showScreen('s-results')">🏠<br>Discover</button>
+  <button class="navbtn" id="navTracker" onclick="renderTracker();showScreen('s-tracker')">📺<br>My List</button>
+  <button class="navbtn" id="navChallenge" onclick="renderChallenge();showScreen('s-challenge')">🏆<br>Challenge</button>
+  <button class="navbtn" id="navQuiz" onclick="startTrivia()">🎯<br>Quiz</button>
+  <button class="navbtn" id="navMore" onclick="showScreen('s-more')">⚙️<br>More</button>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="ach" id="ach"></div>
+
+<div class="bubble" id="bubble" onclick="startTrivia()">
+  <span>🎯 Wanna check your anime knowledge?</span>
+  <span class="x" onclick="event.stopPropagation();closeBubble()">✕</span>
+</div>
+
+<div class="bubble" id="bubble2" onclick="renderPhrases();showScreen('s-phrases')">
+  <span>🎌 Wanna learn fun anime phrases?</span>
+  <span class="x" onclick="event.stopPropagation();closeBubble2()">✕</span>
+</div>
+
+<div class="bubble" id="bubble3" onclick="closeBubble3();openMatch()">
+  <span id="bubble3text">💘 Wanna find your anime wifey or husbando?</span>
+  <span class="x" onclick="event.stopPropagation();closeBubble3()">✕</span>
+</div>
+
+<script>
+const ANIME = [
+{n:"Attack on Titan",g:["Action","Drama"],st:"MAPPA / WIT Studio",va:"Yuki Kaji as Eren, Yui Ishikawa as Mikasa",y:2013,se:"Spring",ep:25,r:8.9,sn:4,d:"Humanity fights for survival against man-eating Titans behind crumbling walls."},
+{n:"Demon Slayer",g:["Action","Fantasy"],st:"ufotable",va:"Natsuki Hanae as Tanjiro, Akari Kitou as Nezuko",y:2019,se:"Spring",ep:26,r:8.5,sn:4,d:"A boy becomes a demon slayer to cure his sister and avenge his family."},
+{n:"Jujutsu Kaisen",g:["Action","Supernatural"],st:"MAPPA",va:"Junya Enoki as Yuji, Yuma Uchida as Megumi",y:2020,se:"Fall",ep:24,r:8.6,sn:2,d:"A student swallows a cursed object and joins a secret school fighting curses."},
+{n:"One Piece",g:["Adventure","Comedy"],st:"Toei Animation",va:"Mayumi Tanaka as Luffy, Kazuya Nakai as Zoro",y:1999,se:"Fall",ep:1080,r:8.7,sn:1,d:"A rubber-powered pirate sails the seas chasing the ultimate treasure, still ongoing."},
+{n:"Fullmetal Alchemist: Brotherhood",g:["Adventure","Fantasy"],st:"Bones",va:"Romi Park as Edward, Rie Kugimiya as Alphonse",y:2009,se:"Spring",ep:64,r:9.1,sn:1,d:"Two brothers use alchemy to search for a way to restore their bodies."},
+{n:"Hunter x Hunter",g:["Adventure","Action"],st:"Madhouse",va:"Megumi Han as Gon, Mariya Ise as Killua",y:2011,se:"Fall",ep:148,r:9.0,sn:1,d:"A boy becomes a Hunter to find his father and discovers a vast, dangerous world."},
+{n:"Your Lie in April",g:["Romance","Drama"],st:"A-1 Pictures",va:"Natsuki Hanae as Kousei, Risa Taneda as Kaori",y:2014,se:"Fall",ep:22,r:8.6,sn:1,d:"A piano prodigy rediscovers music and life through a free-spirited violinist."},
+{n:"Toradora!",g:["Romance","Comedy"],st:"J.C.Staff",va:"Kenichi Suzumura as Ryuji, Rie Kugimiya as Taiga",y:2008,se:"Fall",ep:25,r:8.1,sn:1,d:"Two students helping each other with crushes slowly fall for one another instead."},
+{n:"Fruits Basket",g:["Romance","Drama"],st:"TMS Entertainment",va:"Manaka Iwami as Tohru, Nobunaga Shimazaki as Yuki",y:2019,se:"Spring",ep:25,r:8.2,sn:3,d:"An orphaned girl uncovers the secret of a family cursed to turn into zodiac animals."},
+{n:"Konosuba",g:["Comedy","Fantasy"],st:"Studio Deen",va:"Jun Fukushima as Kazuma, Sora Amamiya as Aqua",y:2016,se:"Winter",ep:10,r:8.1,sn:3,d:"A boy reborn in a fantasy world teams up with a useless goddess for comedic chaos."},
+{n:"Gintama",g:["Comedy","Action"],st:"Sunrise",va:"Tomokazu Sugita as Gintoki",y:2006,se:"Spring",ep:201,r:8.9,sn:7,d:"A samurai takes odd jobs in an alien-occupied Edo, mixing comedy with real heart."},
+{n:"Sword Art Online",g:["Fantasy","Action"],st:"A-1 Pictures",va:"Yoshitsugu Matsuoka as Kirito, Haruka Tomatsu as Asuna",y:2012,se:"Summer",ep:25,r:7.2,sn:4,d:"Players get trapped in a VR game where death in-game means death in real life."},
+{n:"Re:Zero",g:["Fantasy","Drama"],st:"White Fox",va:"Yusuke Kobayashi as Subaru",y:2016,se:"Spring",ep:25,r:8.2,sn:2,d:"A boy who can rewind time by dying tries to save the girl he loves in a new world."},
+{n:"Frieren: Beyond Journey's End",g:["Fantasy","Drama"],st:"Madhouse",va:"Atsumi Tanezaki as Frieren",y:2023,se:"Fall",ep:28,r:9.0,sn:1,d:"An elf mage reflects on life and loss long after her hero party's adventure ends."},
+{n:"Steins;Gate",g:["Sci-Fi","Mystery","Psychological"],st:"White Fox",va:"Mamoru Miyano as Okabe, Asami Imai as Kurisu",y:2011,se:"Spring",ep:24,r:9.0,sn:1,d:"A self-proclaimed mad scientist accidentally invents time travel with dangerous stakes."},
+{n:"Cowboy Bebop",g:["Sci-Fi","Action"],st:"Sunrise",va:"Kouichi Yamadera as Spike",y:1998,se:"Spring",ep:26,r:8.8,sn:1,d:"Bounty hunters drift through space chasing jobs while their pasts catch up with them."},
+{n:"Code Geass",g:["Sci-Fi","Drama","Psychological"],st:"Sunrise",va:"Jun Fukuyama as Lelouch",y:2006,se:"Fall",ep:25,r:8.7,sn:2,d:"An exiled prince gains a power to command anyone and leads a rebellion against an empire."},
+{n:"Another",g:["Horror","Mystery"],st:"P.A. Works",va:"Yuka Iguchi as Mei",y:2012,se:"Winter",ep:12,r:7.5,sn:1,d:"A transfer student discovers his class is cursed with a chain of mysterious deaths."},
+{n:"Parasyte -the maxim-",g:["Horror","Sci-Fi","Psychological"],st:"Madhouse",va:"Nobunaga Shimazaki as Shinichi",y:2014,se:"Fall",ep:24,r:8.3,sn:1,d:"A teenager must coexist with an alien parasite that has taken over his right hand."},
+{n:"K-On!",g:["Slice of Life","Comedy"],st:"Kyoto Animation",va:"Aki Toyosaki as Yui",y:2009,se:"Spring",ep:14,r:7.8,sn:2,d:"High school girls form a light music club and bond over songs and tea time."},
+{n:"Barakamon",g:["Slice of Life","Comedy"],st:"Kinema Citrus",va:"Yuuichi Nakamura as Seishuu",y:2014,se:"Summer",ep:12,r:8.3,sn:1,d:"A calligrapher exiled to a rural island rediscovers his art and himself."},
+{n:"Death Note",g:["Mystery","Supernatural","Psychological"],st:"Madhouse",va:"Mamoru Miyano as Light, Kappei Yamaguchi as L",y:2006,se:"Fall",ep:37,r:8.6,sn:1,d:"A genius student gains a notebook that kills anyone whose name is written in it."},
+{n:"The Promised Neverland",g:["Mystery","Drama","Psychological"],st:"CloverWorks",va:"Sumire Morohoshi as Emma",y:2019,se:"Winter",ep:12,r:8.5,sn:2,d:"Orphans discover a dark secret about their idyllic home and plan a daring escape."},
+{n:"Haikyuu!!",g:["Sports","Comedy"],st:"Production I.G",va:"Ayumu Murase as Hinata, Kaito Ishikawa as Kageyama",y:2014,se:"Spring",ep:25,r:8.7,sn:4,d:"A short but determined player fights to prove himself on his high school volleyball team."},
+{n:"Blue Lock",g:["Sports","Drama"],st:"8bit",va:"Kazuki Ura as Isagi",y:2022,se:"Fall",ep:24,r:8.2,sn:1,d:"Japan's best young strikers compete in a brutal program to forge one world-class forward."},
+{n:"A Silent Voice",g:["Drama","Romance"],st:"Kyoto Animation",va:"Miyu Irino as Shoya, Saori Hayami as Shoko",y:2016,se:"Movie",ep:1,r:8.9,sn:1,d:"A former bully seeks redemption with the deaf classmate he once tormented."},
+{n:"Violet Evergarden",g:["Drama","Fantasy"],st:"Kyoto Animation",va:"Yui Ishikawa as Violet",y:2018,se:"Winter",ep:13,r:8.7,sn:1,d:"An ex-soldier writes letters for others while slowly learning to understand emotions."},
+{n:"Mob Psycho 100",g:["Supernatural","Comedy"],st:"Bones",va:"Setsuo Itou as Mob",y:2016,se:"Summer",ep:12,r:8.6,sn:3,d:"A powerful psychic boy tries to live a normal life while keeping his emotions in check."},
+{n:"Bleach",g:["Supernatural","Action"],st:"Studio Pierrot",va:"Masakazu Morita as Ichigo",y:2004,se:"Fall",ep:366,r:8.1,sn:2,d:"A teenager gains soul reaper powers and battles evil spirits threatening both worlds."},
+{n:"Noragami",g:["Supernatural","Action"],st:"Bones",va:"Yuki Kaji as Yato",y:2014,se:"Winter",ep:12,r:7.9,sn:2,d:"A minor god takes odd jobs for five yen each while searching for purpose."},
+{n:"Naruto",g:["Adventure","Action"],st:"Studio Pierrot",va:"Junko Takeuchi as Naruto",y:2002,se:"Fall",ep:220,r:8.0,sn:1,d:"A young ninja seeks recognition and dreams of becoming Hokage of his village."},
+{n:"My Hero Academia",g:["Action"],st:"Bones",va:"Daiki Yamashita as Deku, Nobuhiko Okamoto as Bakugo",y:2016,se:"Spring",ep:13,r:8.4,sn:7,d:"In a world where most people have superpowers, a powerless boy trains to become a hero."},
+{n:"One Punch Man",g:["Action","Comedy"],st:"Madhouse",va:"Makoto Furukawa as Saitama",y:2015,se:"Fall",ep:12,r:8.7,sn:2,d:"A hero who can defeat any enemy with one punch struggles with the boredom of being unbeatable."},
+{n:"Tokyo Ghoul",g:["Horror","Action"],st:"Studio Pierrot",va:"Natsuki Hanae as Kaneki",y:2014,se:"Summer",ep:12,r:7.8,sn:4,d:"A college student becomes half-ghoul after a near-fatal encounter and must navigate two worlds."},
+{n:"Vinland Saga",g:["Action","Drama"],st:"Wit Studio / MAPPA",va:"Yuto Uemura as Thorfinn",y:2019,se:"Summer",ep:24,r:8.7,sn:2,d:"A young Viking seeks revenge against his father's killer, then questions the cost of violence."},
+{n:"Chainsaw Man",g:["Action","Horror"],st:"MAPPA",va:"Kikunosuke Toya as Denji",y:2022,se:"Fall",ep:12,r:8.5,sn:1,d:"A devil hunter merges with his pet chainsaw devil and gets pulled into a brutal new life."},
+{n:"Spy x Family",g:["Comedy","Action"],st:"Wit Studio / CloverWorks",va:"Takuya Eguchi as Loid, Atsumi Tanezaki as Anya",y:2022,se:"Spring",ep:25,r:8.6,sn:3,d:"A spy, an assassin and a telepath form a fake family, each hiding their identity from the others."},
+{n:"Dragon Ball Z",g:["Action","Adventure"],st:"Toei Animation",va:"Masako Nozawa as Goku",y:1989,se:"Spring",ep:291,r:8.7,sn:1,d:"Earth's strongest warrior and his allies defend the planet against increasingly powerful threats."},
+{n:"Neon Genesis Evangelion",g:["Sci-Fi","Drama","Psychological"],st:"Gainax",va:"Megumi Ogata as Shinji",y:1995,se:"Fall",ep:26,r:8.5,sn:1,d:"Teenagers pilot giant biomechanical robots to defend humanity from mysterious beings."},
+{n:"Erased",g:["Mystery","Drama","Psychological"],st:"A-1 Pictures",va:"Tomoya Maeno as Satoru",y:2016,se:"Winter",ep:12,r:8.3,sn:1,d:"A man who can travel back in time tries to prevent a tragedy from his childhood."},
+{n:"Monster",g:["Mystery","Drama","Psychological"],st:"Madhouse",va:"Hidenobu Kiuchi as Kenzo Tenma",y:2004,se:"Spring",ep:74,r:8.8,sn:1,d:"A doctor hunts down a dangerous killer he once saved as a boy."},
+{n:"Classroom of the Elite",g:["Mystery","Drama","Psychological"],st:"Lerche",va:"Shoya Chiba as Ayanokoji",y:2017,se:"Summer",ep:12,r:7.8,sn:3,d:"Students at an elite school secretly compete in a merciless class ranking system."},
+{n:"Free!",g:["Sports","Drama"],st:"Kyoto Animation",va:"Nobunaga Shimazaki as Haruka",y:2013,se:"Summer",ep:12,r:7.5,sn:3,d:"Childhood friends reunite to form a competitive swimming club in high school."},
+{n:"Spirited Away",g:["Fantasy","Adventure"],st:"Studio Ghibli",va:"Rumi Hiiragi as Chihiro",y:2001,se:"Movie",ep:1,r:8.6,sn:1,d:"A girl wandering into a spirit world must work in a bathhouse to free her trapped parents. Won the Academy Award for Best Animated Feature."},
+{n:"Your Name",g:["Romance","Fantasy"],st:"CoMix Wave Films",va:"Ryunosuke Kamiki as Taki, Mone Kamishiraishi as Mitsuha",y:2016,se:"Movie",ep:1,r:8.9,sn:1,d:"Two strangers mysteriously swap bodies and must find each other across time. One of the highest-grossing anime films ever."},
+{n:"Sailor Moon",g:["Fantasy","Action"],st:"Toei Animation",va:"Kotono Mitsuishi as Usagi",y:1992,se:"Spring",ep:46,r:7.8,sn:5,d:"A clumsy schoolgirl transforms into a magical guardian to fight evil alongside her fellow Sailor Guardians."},
+{n:"Dragon Ball",g:["Adventure","Comedy"],st:"Toei Animation",va:"Masako Nozawa as Goku",y:1986,se:"Spring",ep:153,r:8.1,sn:1,d:"A young boy with a monkey tail trains in martial arts while searching for magical wish-granting orbs."},
+{n:"Yu Yu Hakusho",g:["Action","Supernatural"],st:"Studio Pierrot",va:"Nozomu Sasaki as Yusuke",y:1992,se:"Fall",ep:112,r:8.5,sn:1,d:"A delinquent is revived as a spirit detective tasked with keeping demons in check."},
+{n:"Slam Dunk",g:["Sports","Comedy"],st:"Toei Animation",va:"Show Hayami as Sakuragi",y:1993,se:"Fall",ep:101,r:8.6,sn:1,d:"A delinquent joins his school's basketball team to impress a girl and discovers real passion for the sport."},
+{n:"InuYasha",g:["Fantasy","Adventure"],st:"Sunrise",va:"Kappei Yamaguchi as InuYasha",y:2000,se:"Fall",ep:167,r:8.1,sn:1,d:"A modern girl is pulled into feudal Japan and teams up with a half-demon to collect a shattered jewel."},
+{n:"Fairy Tail",g:["Fantasy","Adventure"],st:"A-1 Pictures",va:"Tetsuya Kakihara as Natsu",y:2009,se:"Fall",ep:175,r:7.6,sn:1,d:"A fire-breathing wizard and his guildmates take on magical jobs across a vibrant fantasy world."},
+{n:"Black Clover",g:["Fantasy","Action"],st:"Studio Pierrot",va:"Gakuto Kajiwara as Asta",y:2017,se:"Fall",ep:170,r:8.1,sn:1,d:"A boy born without magic in a magical world fights to become the Wizard King through sheer will."},
+{n:"The Seven Deadly Sins",g:["Fantasy","Action"],st:"A-1 Pictures",va:"Yuuki Kaji as Meliodas",y:2014,se:"Fall",ep:24,r:7.7,sn:4,d:"A princess seeks out a disbanded group of legendary knights to reclaim her kingdom."},
+{n:"Overlord",g:["Fantasy","Action"],st:"Madhouse",va:"Satoshi Hino as Ainz",y:2015,se:"Summer",ep:13,r:7.9,sn:4,d:"A gamer becomes trapped as his own overpowered character in a game-turned-real world."},
+{n:"No Game No Life",g:["Fantasy","Comedy"],st:"Madhouse",va:"Yoshitsugu Matsuoka as Sora",y:2014,se:"Spring",ep:12,r:8.0,sn:1,d:"Two shut-in siblings are transported to a world where everything is decided by games."},
+{n:"Assassination Classroom",g:["Comedy","Action"],st:"Lerche",va:"Ryohei Kimura as Nagisa",y:2015,se:"Winter",ep:22,r:8.1,sn:2,d:"A class of misfit students must assassinate their tentacled, super-powered teacher before he destroys Earth."},
+{n:"Food Wars!",g:["Comedy"],st:"J.C.Staff",va:"Yoshitsugu Matsuoka as Souma",y:2015,se:"Spring",ep:24,r:7.6,sn:5,d:"A young chef enrolls in an elite culinary school known for its brutal cook-off battles."},
+{n:"Rurouni Kenshin",g:["Action","Adventure"],st:"Studio Gallop",va:"Mayo Suzukaze as Kenshin",y:1996,se:"Winter",ep:95,r:7.7,sn:1,d:"A former assassin swears off killing and wanders Japan protecting the weak with a reverse-blade sword."},
+{n:"Yuri!!! on Ice",g:["Sports","Romance"],st:"MAPPA",va:"Toshiyuki Toyonaga as Yuri",y:2016,se:"Fall",ep:12,r:7.8,sn:1,d:"A figure skater regains his confidence under the coaching of his idol turned mentor."},
+{n:"Land of the Lustrous",g:["Fantasy","Sci-Fi"],st:"Orange",va:"Tomoyo Kurosawa as Phos",y:2017,se:"Fall",ep:12,r:8.1,sn:1,d:"Gem-like immortal beings fight mysterious moon dwellers while grappling with identity and purpose."},
+{n:"Akira",g:["Sci-Fi","Action"],st:"Tokyo Movie Shinsha",va:"Mitsuo Iwata as Kaneda",y:1988,se:"Movie",ep:1,r:8.1,sn:1,d:"A biker gang leader confronts a government project that has turned his friend into a psychic menace. A landmark of cyberpunk animation."},
+{n:"Ghost in the Shell",g:["Sci-Fi"],st:"Production I.G",va:"Atsuko Tanaka as Motoko",y:1995,se:"Movie",ep:1,r:8.0,sn:1,d:"A cyborg security officer hunts a mysterious hacker while questioning what makes her human."},
+{n:"Princess Mononoke",g:["Fantasy","Adventure"],st:"Studio Ghibli",va:"Youji Matsuda as Ashitaka",y:1997,se:"Movie",ep:1,r:8.4,sn:1,d:"A cursed prince gets caught between forest spirits and an industrial settlement destroying their home."},
+{n:"Howl's Moving Castle",g:["Fantasy","Romance"],st:"Studio Ghibli",va:"Chieko Baisho as Sophie",y:2004,se:"Movie",ep:1,r:8.2,sn:1,d:"A young woman cursed into an old body finds shelter in a wizard's magical walking castle."},
+{n:"Weathering with You",g:["Romance","Fantasy"],st:"CoMix Wave Films",va:"Kotaro Daigo as Hodaka",y:2019,se:"Movie",ep:1,r:8.1,sn:1,d:"A runaway boy befriends a girl who can control the weather in a rain-soaked Tokyo."},
+{n:"My Neighbor Totoro",g:["Fantasy","Slice of Life"],st:"Studio Ghibli",va:"Noriko Hidaka as Satsuki",y:1988,se:"Movie",ep:1,r:8.1,sn:1,d:"Two sisters befriend gentle forest spirits after moving to the countryside."},
+{n:"Grave of the Fireflies",g:["Drama"],st:"Studio Ghibli",va:"Tsutomu Tatsumi as Seita",y:1988,se:"Movie",ep:1,r:8.5,sn:1,d:"A teenage boy and his little sister struggle to survive in the final months of World War II Japan."},
+{n:"The Girl Who Leapt Through Time",g:["Sci-Fi","Romance"],st:"Madhouse",va:"Riisa Naka as Makoto",y:2006,se:"Movie",ep:1,r:8.0,sn:1,d:"A high schooler gains the ability to leap through time and uses it for increasingly personal reasons."},
+{n:"Wolf Children",g:["Fantasy","Drama"],st:"Studio Chizu",va:"Aoi Miyazaki as Hana",y:2012,se:"Movie",ep:1,r:8.4,sn:1,d:"A young mother raises her two half-wolf children alone after their father's death."},
+{n:"Demon Slayer: Mugen Train",g:["Action","Fantasy"],st:"ufotable",va:"Natsuki Hanae as Tanjiro",y:2020,se:"Movie",ep:1,r:8.4,sn:1,d:"Tanjiro and friends board a train haunted by a powerful demon in this feature-length continuation."},
+{n:"Jujutsu Kaisen 0",g:["Action","Supernatural"],st:"MAPPA",va:"Megumi Ogata as Yuta",y:2021,se:"Movie",ep:1,r:8.5,sn:1,d:"A student cursed by his childhood friend's spirit enrolls in Jujutsu High to learn to control his power."},
+{n:"Suzume",g:["Fantasy","Adventure"],st:"CoMix Wave Films",va:"Nanoka Hara as Suzume",y:2022,se:"Movie",ep:1,r:8.2,sn:1,d:"A girl who can see doors to another realm joins a mysterious traveler to seal disasters across Japan."},
+{n:"Kuroko's Basketball",g:["Sports"],st:"Production I.G",va:"Kenshou Ono as Kuroko",y:2012,se:"Spring",ep:25,r:8.1,sn:3,d:"An unnoticeable player with uncanny passing skill helps a new team reach the top of high school basketball."},
+{n:"Fist of the North Star",g:["Action","Drama"],st:"Toei Animation",va:"Akira Kamiya as Kenshiro",y:1984,se:"Fall",ep:109,r:8.0,sn:1,d:"A martial artist wanders a post-apocalyptic wasteland avenging the wrongs done by rival warlords."},
+{n:"Dr. Stone",g:["Sci-Fi","Adventure"],st:"TMS Entertainment",va:"Yuusuke Kobayashi as Senku",y:2019,se:"Summer",ep:24,r:8.3,sn:4,d:"A brilliant teen uses science to rebuild civilization after humanity is turned to stone for millennia."},
+{n:"Tokyo Revengers",g:["Action","Drama"],st:"LIDENFILMS",va:"Yuuki Shin as Takemichi",y:2021,se:"Spring",ep:24,r:7.9,sn:2,d:"A man travels back in time to save an ex-girlfriend from a tragic gang conflict."},
+{n:"Bungo Stray Dogs",g:["Mystery","Supernatural"],st:"Bones",va:"Yuto Uemura as Atsushi",y:2016,se:"Spring",ep:12,r:7.8,sn:5,d:"Detectives with powers based on famous authors solve cases in a mysterious port city."},
+{n:"The Rising of the Shield Hero",g:["Fantasy","Action"],st:"Kinema Citrus",va:"Kaito Ishikawa as Naofumi",y:2019,se:"Winter",ep:25,r:7.4,sn:4,d:"A betrayed hero rebuilds his reputation using a humble shield in a world of summoned champions."},
+{n:"That Time I Got Reincarnated as a Slime",g:["Fantasy","Comedy"],st:"Eight Bit",va:"Miho Okasaki as Rimuru",y:2018,se:"Fall",ep:24,r:8.2,sn:3,d:"A man reborn as a slime in another world builds a nation of monsters through diplomacy and strength."},
+{n:"Mushoku Tensei",g:["Fantasy","Drama"],st:"Studio Bind",va:"Yumi Uchiyama as Rudeus",y:2021,se:"Winter",ep:23,r:8.2,sn:2,d:"A shut-in is reincarnated into a fantasy world and resolves to live his new life without regrets."},
+{n:"The Devil Is a Part-Timer!",g:["Comedy","Fantasy"],st:"White Fox",va:"Ryouta Ohsaka as Sadao",y:2013,se:"Spring",ep:13,r:7.5,sn:2,d:"A defeated demon lord takes a fast-food job in modern Tokyo while plotting his return to power."},
+{n:"Fate/Zero",g:["Action","Fantasy"],st:"ufotable",va:"Tomokazu Sugita as Waver",y:2011,se:"Fall",ep:25,r:8.3,sn:2,d:"Seven mages summon legendary heroes to fight to the death for a wish-granting relic."},
+{n:"Bocchi the Rock!",g:["Comedy","Slice of Life"],st:"CloverWorks",va:"Yumiri Hanamori as Bocchi",y:2022,se:"Fall",ep:12,r:8.8,sn:1,d:"An anxious girl finds her voice by joining a school band as its guitarist."},
+{n:"Oshi no Ko",g:["Drama","Mystery"],st:"Doga Kobo",va:"Takeo Otsuka as Aqua",y:2023,se:"Spring",ep:11,r:8.6,sn:2,d:"Twins reincarnated as the children of an idol uncover the dark side of the entertainment industry."},
+{n:"The Apothecary Diaries",g:["Mystery","Drama"],st:"Toho / OLM",va:"Aoi Yuuki as Maomao",y:2023,se:"Fall",ep:24,r:8.5,sn:2,d:"A poison-loving apothecary solves mysteries within an ancient, imperial palace."},
+{n:"Kaguya-sama: Love is War",g:["Romance","Comedy"],st:"A-1 Pictures",va:"Aoi Koga as Kaguya, Makoto Furukawa as Miyuki",y:2019,se:"Winter",ep:12,r:8.4,sn:3,d:"Two student council geniuses wage a secret war to be the first to confess their feelings."},
+{n:"Golden Kamuy",g:["Action","Adventure"],st:"Geno Studio",va:"Kenjiro Tsuda as Sugimoto",y:2018,se:"Spring",ep:12,r:7.8,sn:4,d:"A war veteran and an Ainu girl hunt for hidden gold across the wilds of early 1900s Hokkaido."},
+{n:"March Comes in Like a Lion",g:["Drama","Slice of Life"],st:"Shaft",va:"Kengo Kawanishi as Rei",y:2016,se:"Fall",ep:22,r:8.3,sn:2,d:"A young professional shogi player finds warmth and healing through a caring neighborhood family."},
+{n:"Anohana",g:["Drama","Slice of Life"],st:"A-1 Pictures",va:"Miyu Irino as Jinta",y:2011,se:"Spring",ep:11,r:8.4,sn:1,d:"Childhood friends reunite to help the ghost of a girl they lost move on, confronting old wounds."},
+{n:"Higurashi When They Cry",g:["Horror","Mystery","Psychological"],st:"Studio Deen",va:"Satsuki Yukino as Rena",y:2006,se:"Spring",ep:26,r:7.9,sn:1,d:"A boy moves to a quiet village where each arc unravels a new, bloody twist on the same mystery."},
+{n:"Grand Blue",g:["Comedy"],st:"Zero-G",va:"Yuichiro Umehara as Iori",y:2018,se:"Summer",ep:12,r:8.1,sn:1,d:"A college freshman gets pulled into his uncle's chaotic diving-shop crew and their non-stop antics."},
+{n:"Nichijou",g:["Comedy","Slice of Life"],st:"Kyoto Animation",va:"Satomi Satou as Yuuko",y:2011,se:"Spring",ep:26,r:8.5,sn:1,d:"Absurd, everyday moments spiral into surreal comedy for a group of ordinary students and a robot girl."},
+{n:"Wotakoi: Love is Hard for Otaku",g:["Romance","Comedy"],st:"A-1 Pictures",va:"Yoshitsugu Matsuoka as Hirotaka",y:2018,se:"Spring",ep:11,r:7.6,sn:1,d:"Two otaku coworkers navigate an unconventional office romance built on shared nerdy interests."},
+{n:"Log Horizon",g:["Fantasy","Adventure"],st:"Satelight",va:"Kenji Nojima as Shiroe",y:2013,se:"Fall",ep:25,r:7.7,sn:3,d:"Thousands of players are trapped inside their favorite MMORPG and must build a new society within it."},
+{n:"Death Parade",g:["Mystery","Drama","Psychological"],st:"Madhouse",va:"Tomoaki Maeno as Decim",y:2015,se:"Winter",ep:12,r:8.1,sn:1,d:"The dead face judgment through deadly games at a mysterious bar between life and the afterlife."},
+{n:"Psycho-Pass",g:["Psychological","Sci-Fi","Mystery"],st:"Production I.G",va:"Kana Hanazawa as Akane, Tomokazu Seki as Kogami",y:2012,se:"Fall",ep:22,r:8.3,sn:3,d:"In a future where a system measures criminal intent, a young inspector questions what justice really means."},
+{n:"Paranoia Agent",g:["Psychological","Mystery","Horror"],st:"Madhouse",va:"Mamiko Noto as Tsukiko",y:2004,se:"Winter",ep:13,r:8.0,sn:1,d:"A mysterious bat-wielding attacker terrorizes Tokyo, exposing the hidden fears of everyone he hits."},
+{n:"Perfect Blue",g:["Psychological","Horror"],st:"Madhouse",va:"Junko Iwao as Mima",y:1997,se:"Movie",ep:1,r:8.0,sn:1,d:"A pop idol turned actress loses her grip on reality as an obsessive fan stalks her."},
+{n:"Paprika",g:["Psychological","Sci-Fi","Fantasy"],st:"Madhouse",va:"Megumi Hayashibara as Paprika",y:2006,se:"Movie",ep:1,r:7.9,sn:1,d:"A therapist enters patients' dreams with a device that gets stolen, blurring dreams and reality."},
+{n:"Serial Experiments Lain",g:["Psychological","Sci-Fi"],st:"Triangle Staff",va:"Kaori Shimizu as Lain",y:1998,se:"Summer",ep:13,r:8.0,sn:1,d:"A shy girl is drawn into a digital network called the Wired and begins to question her own identity."},
+{n:"Puella Magi Madoka Magica",g:["Psychological","Fantasy","Drama"],st:"Shaft",va:"Aoi Yuuki as Madoka, Chiwa Saitou as Homura",y:2011,se:"Winter",ep:12,r:8.4,sn:1,d:"A girl offered a wish in exchange for becoming a magical girl uncovers the dark truth behind the contract."},
+{n:"Kaiji: Ultimate Survivor",g:["Psychological","Drama"],st:"Madhouse",va:"Masaki Terasoma as Kaiji",y:2007,se:"Fall",ep:26,r:8.1,sn:2,d:"A broke gambler is dragged into deadly high-stakes games where nerve and trust decide who survives."},
+{n:"The Tatami Galaxy",g:["Psychological","Comedy","Romance"],st:"Madhouse",va:"Hiroshi Kamiya as Watashi",y:2010,se:"Spring",ep:11,r:8.6,sn:1,d:"A college student relives his campus years in parallel universes, hunting for the perfect life."},
+{n:"Ouran High School Host Club",g:["Romance","Comedy"],st:"Bones",va:"Maaya Sakamoto as Haruhi",y:2006,se:"Spring",ep:26,r:8.1,sn:1,d:"A scholarship student is mistaken for a boy and ends up working in an elite school's host club."},
+{n:"Cardcaptor Sakura",g:["Fantasy","Adventure"],st:"Madhouse",va:"Sakura Tange as Sakura",y:1998,se:"Spring",ep:70,r:8.2,sn:1,d:"A young girl collects escaped magical cards and gives them new life with her own power."},
+{n:"Trigun",g:["Action","Adventure","Comedy"],st:"Madhouse",va:"Masaya Onosaka as Vash",y:1998,se:"Spring",ep:26,r:8.2,sn:1,d:"A gentle, pacifist gunman with a huge bounty wanders a desert planet while trouble follows him."},
+{n:"Samurai Champloo",g:["Action","Adventure"],st:"Manglobe",va:"Ayako Kawasumi as Fuu",y:2004,se:"Spring",ep:26,r:8.5,sn:1,d:"Two mismatched swordsmen escort a girl across Edo-era Japan to a hip-hop soundtrack."},
+{n:"Great Teacher Onizuka",g:["Comedy","Slice of Life","Drama"],st:"Studio Pierrot",va:"Nobuyuki Hiyama as Onizuka",y:1999,se:"Summer",ep:43,r:8.7,sn:1,d:"A former gang member becomes a teacher and wins over his problem class with unorthodox methods."},
+{n:"Berserk (1997)",g:["Action","Fantasy","Drama"],st:"Oriental Light and Magic",va:"Nobutoshi Canna as Guts",y:1997,se:"Fall",ep:25,r:8.6,sn:1,d:"A lone mercenary with a giant sword battles fate and demons in a dark medieval world. Mature themes."},
+{n:"Dandadan",g:["Supernatural","Comedy","Action"],st:"Science SARU",va:"Shion Wakayama as Momo, Natsuki Hanae as Okarun",y:2024,se:"Fall",ep:12,r:8.6,sn:2,d:"A girl who believes in ghosts and a boy who believes in aliens discover that both are real."},
+{n:"Solo Leveling",g:["Action","Fantasy"],st:"A-1 Pictures",va:"Taito Ban as Jinwoo",y:2024,se:"Winter",ep:12,r:8.2,sn:2,d:"The weakest hunter gains the power to level up alone and rises through deadly dungeons."},
+{n:"Delicious in Dungeon",g:["Fantasy","Comedy","Adventure"],st:"Trigger",va:"Kentaro Kumagai as Laios",y:2024,se:"Winter",ep:24,r:8.6,sn:1,d:"Adventurers survive a deadly dungeon by cooking and eating the monsters they defeat."},
+{n:"Clannad: After Story",g:["Drama","Romance","Slice of Life"],st:"Kyoto Animation",va:"Tomokazu Sugita as Tomoya",y:2008,se:"Fall",ep:24,r:9.0,sn:1,d:"A former delinquent and his wife face adult life, family and loss in this emotional sequel."},
+{n:"Angel Beats!",g:["Drama","Supernatural","Comedy"],st:"P.A. Works",va:"Hiroshi Kamiya as Otonashi",y:2010,se:"Spring",ep:13,r:8.1,sn:1,d:"Teens in an afterlife school fight an angel while uncovering the regrets that brought them there."},
+{n:"Tengen Toppa Gurren Lagann",g:["Action","Sci-Fi","Adventure"],st:"Gainax",va:"Tetsuya Kakihara as Simon, Katsuyuki Konishi as Kamina",y:2007,se:"Spring",ep:27,r:8.6,sn:1,d:"Two young men from an underground village drill their way to the surface and beyond, chasing the sky."}
+];
+
+const G=(q,arr)=>({k:'g',q:q,o:arr.map(s=>{const x=s.split('|');return {t:x[0],g:x[1].split(',')};})});
+const P=(q,key,arr)=>({k:'p',q:q,key:key,o:arr.map(s=>{const x=s.split('|');return {t:x[0],v:x[1]};})});
+const QUIZ=[
+G("What kind of story are you in the mood for?",["Epic battles and power ups|Action,Adventure","Falling in love|Romance","Laugh-out-loud comedy|Comedy","Puzzles and mysteries|Mystery","Twisted mind games|Psychological,Mystery","Magic and other worlds|Fantasy","Space, robots and the future|Sci-Fi","Chilling and scary|Horror"]),
+G("Pick a setting:",["A magical kingdom|Fantasy","A futuristic city|Sci-Fi","A normal high school|Slice of Life,Romance","A haunted house|Horror","A sports stadium|Sports","Open seas and wild lands|Adventure","A dark alley with a detective|Mystery,Psychological","A battlefield|Action,Drama"]),
+G("Your ideal main character is:",["A hot-blooded hero who never quits|Action,Adventure,Sports","A genius schemer|Psychological,Mystery","Shy but growing stronger|Slice of Life,Romance,Drama","Funny and clumsy|Comedy","A lone wolf with a past|Action,Drama","Overpowered but lazy|Comedy,Action","A dark anti-hero|Psychological,Action","A gentle healer|Fantasy,Slice of Life"]),
+G("How much action do you want?",["Non-stop fights|Action","Some action, some story|Adventure,Fantasy","Mostly talking and feelings|Drama,Slice of Life","None at all|Slice of Life,Romance","Strategy over fists|Mystery,Psychological","Sports competition|Sports","Giant monster battles|Action,Horror","Epic wars|Action,Drama"]),
+G("How should an episode make you feel?",["Pumped up|Action,Sports","Warm and happy|Slice of Life,Comedy,Romance","In tears|Drama,Romance","Thinking hard|Psychological,Mystery,Sci-Fi","Amazed by new worlds|Fantasy,Adventure","Creeped out|Horror","Laughing|Comedy","Inspired|Sports,Drama"]),
+G("Pick a power you'd want:",["Super strength|Action","Time travel|Sci-Fi,Mystery","Magic|Fantasy","Mind reading|Psychological,Mystery","Talking to spirits|Supernatural","Invisibility|Mystery,Comedy","Perfect luck|Comedy,Adventure","Immortality|Drama,Fantasy"]),
+G("Pick a vibe for the art and music:",["Bright and colorful|Comedy,Slice of Life","Dark and gritty|Horror,Psychological,Action","Dreamy and emotional|Drama,Romance,Fantasy","Retro 90s look|Sci-Fi,Action,Adventure","Sleek and modern|Action,Supernatural","Cozy and calm|Slice of Life","Rock or jazz soundtrack|Sports,Adventure","Epic orchestral|Fantasy,Drama"]),
+G("Who would you team up with?",["A loyal crew of friends|Adventure,Sports,Comedy","A mysterious genius|Mystery,Psychological","A powerful demon or spirit|Supernatural,Fantasy","A rival who pushes me|Sports,Action","A childhood friend|Romance,Slice of Life","A robot or AI|Sci-Fi","A detective partner|Mystery","Nobody, I go solo|Action,Drama"]),
+G("Pick a school or world to join:",["A ninja village|Action,Adventure","A magic academy|Fantasy","An elite school of geniuses|Psychological,Mystery","An ordinary high school club|Slice of Life,Comedy","A pro sports team|Sports","A space fleet|Sci-Fi","A monster-hunting agency|Supernatural,Action","The afterlife|Supernatural,Drama"]),
+G("Pick the title that sounds best:",["The Last Sword|Action,Drama","Moonlight Confessions|Romance","The Cursed Class|Horror,Mystery","Kingdom of Spellbound Stars|Fantasy,Adventure","The Perfect Crime Game|Psychological,Mystery","Robot Cafe Days|Sci-Fi,Slice of Life,Comedy","Nine Wins to Nationals|Sports","Ghosts, Gods and Gossip|Supernatural,Comedy"]),
+P("How long should it be?","ep",["Short and sweet (about 12 episodes)|short","Medium (2 to 3 seasons)|medium","A long epic (30+ episodes)|long","A movie|movie","No preference|any"]),
+P("Old classics or new hits?","era",["Classics (before 2010)|classic","Modern hits (2010 and later)|modern","Both are fine|any"]),
+P("Are dark or mature themes okay?","mature",["Yes, bring it on|yes","A little bit|little","No, keep it light|no"])
+];
+const ALL_GENRES = ["Action","Adventure","Romance","Comedy","Fantasy","Sci-Fi","Horror","Slice of Life","Mystery","Psychological","Sports","Drama","Supernatural"];
+const COLORS = ["#e8536e","#7c5cd4","#3fb371","#e0a02e","#3b8de0","#c2467a","#2e9e9e","#c96f2e"];
+
+const QUOTE_Q = [
+{q:'Characters play deadly games at a bar between life and the afterlife in which anime?',a:"Death Parade"},
+{q:'A "Sibyl System" measures crime coefficients in which anime?',a:"Psycho-Pass"},
+{q:'A contract with Kyubey turns girls into magical girls in which anime?',a:"Puella Magi Madoka Magica"},
+{q:'A 1997 film about an idol-turned-actress and an obsessive fan is which title?',a:"Perfect Blue"},
+{q:'The "Hokage" is the title every ninja dreams of in which anime?',a:"Naruto"},
+{q:'A pacifist gunman named Vash the Stampede stars in which anime?',a:"Trigun"},
+{q:'Simon and Kamina drill toward the heavens in which anime?',a:"Tengen Toppa Gurren Lagann"},
+{q:'The "Thousand-Year Blood War" is an arc of which anime?',a:"Bleach"},
+{q:'Adventurers cook meals from dungeon monsters in which anime?',a:"Delicious in Dungeon"},
+{q:'A broke gambler risks everything in deadly games in which anime?',a:"Kaiji: Ultimate Survivor"},
+{q:'Which anime features the catchphrase "Dattebayo"?',a:"Naruto"},
+{q:'"Plus Ultra" is the motto shouted in which anime?',a:"My Hero Academia"},
+{q:'"Kamehameha" is a signature attack in which anime?',a:"Dragon Ball Z"},
+{q:"Which anime's hero dreams of becoming the Pirate King?",a:"One Piece"},
+{q:'Soldiers who "dedicate their hearts" belong to which anime?',a:"Attack on Titan"},
+{q:'The power system called "Nen" appears in which anime?',a:"Hunter x Hunter"},
+{q:'"Cursed energy" and curses are central to which anime?',a:"Jujutsu Kaisen"},
+{q:'"Equivalent Exchange" is a core law in which anime?',a:"Fullmetal Alchemist: Brotherhood"},
+{q:'"Hollows" and "Zanpakuto" are terms from which anime?',a:"Bleach"},
+{q:'A notebook that kills anyone whose name is written in it appears in which anime?',a:"Death Note"},
+{q:'The power called "Geass" lets the hero command anyone in which anime?',a:"Code Geass"},
+{q:'"El Psy Kongroo" is a catchphrase in which anime?',a:"Steins;Gate"},
+{q:'Special sword-fighting "breathing techniques" are used in which anime?',a:"Demon Slayer"},
+{q:'A boy who fuses with a chainsaw devil is the hero of which anime?',a:"Chainsaw Man"},
+{q:'A spy, an assassin and a telepath form a fake family in which anime?',a:"Spy x Family"}
+];
+
+const PHRASES = [
+{jp:"お疲れ様です",ro:"Otsukaresama desu",en:"Thank you for your hard work",br:"otsukare (worn out from effort) + sama (honorific) + desu (to be)"},
+{jp:"いただきます",ro:"Itadakimasu",en:"Said gratefully before eating",br:"itadaku (humble 'to receive') + masu (polite ending)"},
+{jp:"ごちそうさまでした",ro:"Gochisousama deshita",en:"Thank you for the meal",br:"gochisou (feast) + sama (honorific) + deshita (was)"},
+{jp:"がんばって",ro:"Ganbatte",en:"Do your best, good luck",br:"ganbaru (to persevere) + te (request/encouragement form)"},
+{jp:"すごい",ro:"Sugoi",en:"Amazing, incredible",br:"a single adjective expressing awe"},
+{jp:"かわいい",ro:"Kawaii",en:"Cute",br:"a single adjective for cuteness"},
+{jp:"ありがとう",ro:"Arigatou",en:"Thank you",br:"from arigatashi, 'hard to exist' -> gratitude"},
+{jp:"ごめんなさい",ro:"Gomennasai",en:"I'm sorry",br:"gomen (pardon) + nasai (polite request form)"},
+{jp:"大丈夫",ro:"Daijoubu",en:"It's okay, are you okay",br:"dai (great) + joubu (sturdy) -> all is fine"},
+{jp:"うるさい",ro:"Urusai",en:"Shut up, too noisy",br:"an adjective meaning annoyingly loud"},
+{jp:"馬鹿",ro:"Baka",en:"Idiot, fool",br:"a common insult, often said playfully"},
+{jp:"かっこいい",ro:"Kakkoii",en:"Cool, handsome",br:"kakko (form/style) + ii (good)"},
+{jp:"先輩",ro:"Senpai",en:"Senior, upperclassman",br:"sen (before) + hai (companion)"},
+{jp:"後輩",ro:"Kouhai",en:"Junior, underclassman",br:"kou (after) + hai (companion)"},
+{jp:"仲間",ro:"Nakama",en:"Friend, comrade, crewmate",br:"naka (relationship) + ma (space/interval)"},
+{jp:"夢",ro:"Yume",en:"Dream",br:"a single noun for a dream or aspiration"},
+{jp:"力",ro:"Chikara",en:"Power, strength",br:"a single noun for physical or inner power"},
+{jp:"自由",ro:"Jiyuu",en:"Freedom",br:"ji (self) + yuu (reason/cause) -> acting by one's own reason"},
+{jp:"家族",ro:"Kazoku",en:"Family",br:"ka (house) + zoku (tribe/clan)"},
+{jp:"守る",ro:"Mamoru",en:"To protect",br:"a verb meaning to guard or defend someone"},
+{jp:"諦めない",ro:"Akiramenai",en:"Never give up",br:"akirameru (to give up) + nai (negation)"},
+{jp:"一生懸命",ro:"Isshoukenmei",en:"With all one's might",br:"issho (one life) + kenmei (devotion) -> giving everything"},
+{jp:"信じる",ro:"Shinjiru",en:"To believe",br:"a verb meaning to trust or have faith"},
+{jp:"世界",ro:"Sekai",en:"World",br:"se (generation) + kai (boundary/realm)"},
+{jp:"伝説",ro:"Densetsu",en:"Legend",br:"den (transmit) + setsu (tale) -> a story passed down"},
+{jp:"勇気",ro:"Yuuki",en:"Courage",br:"yuu (bravery) + ki (spirit/energy)"},
+{jp:"仲良し",ro:"Nakayoshi",en:"Close friends",br:"naka (relationship) + yoshi (good)"},
+{jp:"助けて",ro:"Tasukete",en:"Help me",br:"tasukeru (to help/save) + te (request form)"},
+{jp:"待って",ro:"Matte",en:"Wait",br:"matsu (to wait) + te (request form)"},
+{jp:"行くぞ",ro:"Ikuzo",en:"Let's go!",br:"iku (to go) + zo (assertive ending, often used by male characters)"},
+{jp:"頑張れ",ro:"Ganbare",en:"Go for it, keep fighting",br:"imperative form of ganbaru (to persevere)"},
+{jp:"お帰りなさい",ro:"Okaerinasai",en:"Welcome home",br:"okaeri (return) + nasai (polite ending)"},
+{jp:"ただいま",ro:"Tadaima",en:"I'm home",br:"tada (just now) + ima (now)"},
+{jp:"おはよう",ro:"Ohayou",en:"Good morning",br:"a shortened, casual morning greeting"},
+{jp:"こんにちは",ro:"Konnichiwa",en:"Hello, good afternoon",br:"a standard daytime greeting"},
+{jp:"こんばんは",ro:"Konbanwa",en:"Good evening",br:"a standard evening greeting"},
+{jp:"さようなら",ro:"Sayounara",en:"Goodbye",br:"a formal farewell, often implying a longer parting"},
+{jp:"はい",ro:"Hai",en:"Yes",br:"a simple affirmative response"},
+{jp:"いいえ",ro:"Iie",en:"No",br:"a simple negative response"},
+{jp:"分かった",ro:"Wakatta",en:"Understood, got it",br:"past tense of wakaru (to understand)"},
+{jp:"マジで",ro:"Majide",en:"Seriously? For real",br:"maji (serious) + de (particle)"},
+{jp:"なんで",ro:"Nande",en:"Why, how come",br:"a casual question word"},
+{jp:"どうして",ro:"Doushite",en:"Why",br:"a more formal question word than nande"},
+{jp:"嘘",ro:"Uso",en:"Lie, no way",br:"used alone as an exclamation of disbelief"},
+{jp:"やめて",ro:"Yamete",en:"Stop it",br:"yameru (to stop) + te (request form)"}
+];
+
+function genMissingQ(a){
+  const letters = a.n.split('');
+  let idx;
+  do{ idx = Math.floor(Math.random()*letters.length); }while(!/[A-Za-z]/.test(letters[idx]));
+  const masked = letters.map((c,i)=> i===idx? '_' : c).join('');
+  const wrong = ANIME.filter(x=>x.n!==a.n).sort(()=>0.5-Math.random()).slice(0,3).map(x=>x.n);
+  const opts = [a.n,...wrong].sort(()=>0.5-Math.random());
+  return {q:`Which anime name is this: "${masked}"?`, opts, a:a.n};
+}
+
+let currentBatch = [];
+let state = {name:"",age:0,gender:"",genreScore:{},shownNames:[],trackerList:[],notes:[],bubbleShown:false,bubble2Shown:false,bubble3Shown:false,agreed:false,theme:"system",reminder:{on:false,time:"20:00"},challenges:[],activity:{},lastUpdateCheck:0,sound:true,haptics:true,images:true,seen:[],prefs:{ep:"any",era:"any",mature:"yes"},ach:[],quizBest:{}};
+try{ const saved = JSON.parse(localStorage.getItem("animePartner")); if(saved) state = Object.assign(state, saved); }catch(e){}
+
+function save(){ try{ localStorage.setItem("animePartner", JSON.stringify(state)); }catch(e){} }
+const BASE_SCREENS = ['s-splash','s-terms','s-welcome','s-usertype','s-quiz','s-experienced','s-results'];
+function showScreen(id, fromPop){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const navMap={navDiscover:['s-results','s-seen'],navTracker:['s-tracker'],navChallenge:['s-challenge'],navQuiz:['s-quizmenu','s-trivia','s-trivia-result'],navMore:['s-more','s-settings','s-faq','s-contact','s-termsview','s-match','s-watch','s-notes','s-phrases']};
+  Object.keys(navMap).forEach(k=>{ const el=document.getElementById(k); if(el) el.classList.toggle('active', navMap[k].includes(id)); });
+  window.scrollTo(0,0);
+  if(!fromPop&&window.__booted) SFX.swish();
+  if(!fromPop){ try{ if(BASE_SCREENS.includes(id)) history.replaceState({s:id},''); else history.pushState({s:id},''); }catch(e){} }
+  if(id==='s-results' && !state.bubbleShown){ state.bubbleShown=true; save(); setTimeout(()=>{ document.getElementById('bubble').classList.add('show'); },4000); }
+  if(id==='s-results' && !state.bubble3Shown){ state.bubble3Shown=true; save(); setTimeout(()=>{ document.getElementById('bubble3').classList.add('show'); },9000); }
+  if(id==='s-tracker' && !state.bubble2Shown){ state.bubble2Shown=true; save(); setTimeout(()=>{ document.getElementById('bubble2').classList.add('show'); },3000); }
+}
+function closeBubble(){ document.getElementById('bubble').classList.remove('show'); }
+
+function startApp(){
+  const name = document.getElementById('inName').value.trim();
+  const age = parseInt(document.getElementById('inAge').value,10);
+  const err = document.getElementById('ageErr');
+  if(!name || !age){ err.textContent="Please enter your name and age."; err.style.display='block'; return; }
+  if(age < 18){ err.textContent="Anime Partner is available for users aged 18 and older."; err.style.display='block'; return; }
+  err.style.display='none';
+  state.name = name; state.age = age; save();
+  document.getElementById('greet').textContent = "Nice to meet you, " + name + "!";
+  document.getElementById('topbar').classList.add('show');
+  showScreen('s-usertype');
+}
+
+
+function renderPhrases(){
+  const div = document.getElementById('phrasesList');
+  div.innerHTML = PHRASES.map(p=>`<div class="card"><h3>${p.jp}</h3><div class="meta">${p.ro}</div><div class="desc"><b>${p.en}</b></div><div class="meta">${p.br}</div></div>`).join('');
+}
+function closeBubble2(){ document.getElementById('bubble2').classList.remove('show'); }
+function closeBubble3(){ document.getElementById('bubble3').classList.remove('show'); }
+
+let quizIndex = 0;
+function chooseType(type){
+  ALL_GENRES.forEach(g=> state.genreScore[g]=0);
+  if(type==='beginner'){ quizIndex=0; renderQuiz(); showScreen('s-quiz'); }
+  else{ renderChips(); showScreen('s-experienced'); }
+}
+function renderQuiz(){
+  const dots = document.getElementById('quizDots');
+  dots.innerHTML = QUIZ.map((_,i)=>`<div class="dot ${i===quizIndex?'active':''}"></div>`).join('');
+  document.getElementById('quizQ').textContent = QUIZ[quizIndex].q;
+  const optsDiv = document.getElementById('quizOptions');
+  optsDiv.innerHTML='';
+  QUIZ[quizIndex].opts.forEach(o=>{
+    const el = document.createElement('div');
+    el.className='choice big'; el.textContent=o.t;
+    el.onclick=()=>{ o.g.forEach(g=>state.genreScore[g]++); nextQuiz(); };
+    optsDiv.appendChild(el);
+  });
+}
+function nextQuiz(){ quizIndex++; if(quizIndex >= QUIZ.length){ save(); goToResults(); } else renderQuiz(); }
+
+function renderChips(){
+  const div = document.getElementById('genreChips'); div.innerHTML='';
+  ALL_GENRES.forEach(g=>{
+    const c = document.createElement('div'); c.className='chip'; c.textContent=g;
+    c.onclick=()=>{ c.classList.toggle('selected'); };
+    div.appendChild(c);
+  });
+}
+function submitExperienced(){
+  document.querySelectorAll('#genreChips .chip.selected').forEach(c=>{ state.genreScore[c.textContent]+=2; });
+  save(); goToResults();
+}
+
+function scoreAnime(a){ return a.g.reduce((s,g)=> s + (state.genreScore[g]||0), 0); }
+function goToResults(){ state.shownNames=[]; renderResults(); document.getElementById('navbar').classList.add('show'); showScreen('s-results'); }
+function reshuffle(){ state.shownNames=[]; renderResults(); }
+
+function watchTime(ep){
+  const min = ep*24; const h = Math.floor(min/60); const m = min%60;
+  if(h>=24){ const d=Math.floor(h/24), rh=h%24; return `${d}d ${rh}h to binge`; }
+  return `${h}h ${m}m to binge`;
+}
+function acclaim(r){ if(r>=8.8) return "🏆 Fan favorite"; if(r>=8.4) return "⭐ Highly rated"; return "👍 Well liked"; }
+
+function renderResults(){
+  const ranked = ANIME.filter(a=>!state.shownNames.includes(a.n)).sort((a,b)=> scoreAnime(b)-scoreAnime(a));
+  const batch = ranked.slice(0,7);
+  batch.forEach(a=>state.shownNames.push(a.n));
+  currentBatch = batch.map(a=>a.n);
+  const list = document.getElementById('resultsList');
+  if(batch.length===0){ list.innerHTML = '<p class="empty">You have seen all matching anime. Tap Refresh to start over.</p>'; return; }
+  list.innerHTML = batch.map(a=>cardHTML(a)).join('');
+}
+function cardHTML(a){
+  const color = COLORS[a.n.length % COLORS.length];
+  const q = encodeURIComponent(a.n);
+  return `<div class="card">
+    <div class="cover ${state.images!==false&&!(a.n in coverCache)?'shimmer':''}" data-name="${encodeURIComponent(a.n)}" style="background-color:${color}">${a.n[0]}</div>
+    <h3>${a.n}</h3>
+    <div class="tags">${a.g.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
+    <div class="acclaim">${acclaim(a.r)}</div>
+    <div class="meta">${a.st} · ${a.se} ${a.y} · ${a.sn===1?'1 season':a.sn+' seasons'} · ${a.ep} episodes · ⭐ ${a.r}/10</div>
+    <div class="meta">⏱ ${watchTime(a.ep)} (at 24 min/ep)</div>
+    <div class="meta">${a.va}</div>
+    <div class="desc">${a.d}</div>
+    <div class="card-actions">
+      <button class="add" onclick="addToTracker('${a.n.replace(/'/g,"\\'")}')">➕ Add to list</button>
+      <button onclick="notInterested('${a.n.replace(/'/g,"\\'")}')">👎 Not for me</button>
+      <a href="https://myanimelist.net/anime.php?q=${q}">🔗 View</a>
+    </div>
+  </div>`;
+}
+function notInterested(name){
+  const next = ANIME.filter(a=>!state.shownNames.includes(a.n)).sort((a,b)=>scoreAnime(b)-scoreAnime(a))[0];
+  if(next) state.shownNames.push(next.n);
+  renderResults();
+}
+function addToTracker(name){
+  if(state.trackerList.find(t=>t.n===name)){ toast('Already in your list'); return; }
+  const a = ANIME.find(x=>x.n===name);
+  state.trackerList.push({n:a.n, total:a.ep, watched: a.ep<=26 ? new Array(a.ep).fill(false) : 0});
+  save(); SFX.ok(); toast('Added to My List'); checkAch();
+}
+function renderTracker(){
+  const div = document.getElementById('trackerList');
+  if(state.trackerList.length===0){ div.innerHTML='<p class="empty">No anime added yet. Add some from Discover!</p>'; return; }
+  div.innerHTML = state.trackerList.map((t,i)=>{
+    if(Array.isArray(t.watched)){
+      const done = t.watched.filter(Boolean).length;
+      const grid = t.watched.map((w,ei)=>`<div class="ep ${w?'done':''}" onclick="toggleEp(${i},${ei})">${ei+1}</div>`).join('');
+      return `<div class="card"><h3>${t.n}</h3><div class="meta">${done} / ${t.total} episodes watched</div>
+        <div class="bar"><div class="bar-fill" style="width:${done/t.total*100}%"></div></div>
+        <div class="ep-grid">${grid}</div></div>`;
+    } else {
+      const pct = Math.min(100, t.watched/t.total*100);
+      return `<div class="card"><h3>${t.n}</h3><div class="meta">${t.watched} / ${t.total} episodes watched</div>
+        <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <input type="number" min="0" max="${t.total}" value="${t.watched}" onchange="setCount(${i},this.value)" style="margin-top:6px;"></div>`;
+    }
+  }).join('');
+}
+function toggleEp(i,ei){ const t=state.trackerList[i]; t.watched[ei]=!t.watched[ei]; logActivity(t.watched[ei]?1:-1); if(t.watched[ei]) SFX.ok(); save(); renderTracker(); if(t.watched.every(Boolean)){ SFX.win(); confetti(); toast('🎉 You finished '+t.n+'!'); } }
+function setCount(i,val){ const t=state.trackerList[i]; const old=t.watched; t.watched=Math.max(0,Math.min(t.total,parseInt(val,10)||0)); logActivity(t.watched-old); save(); renderTracker(); if(t.watched===t.total && old<t.total){ SFX.win(); confetti(); toast('🎉 You finished '+t.n+'!'); } }
+
+function addNote(){
+  const inp = document.getElementById('noteInput');
+  const val = inp.value.trim();
+  if(!val) return;
+  state.notes.push(val); save(); checkAch(); inp.value=''; renderNotes();
+}
+function removeNote(i){ state.notes.splice(i,1); save(); renderNotes(); }
+function renderNotes(){
+  const div = document.getElementById('notesList');
+  if(state.notes.length===0){ div.innerHTML='<p class="empty">No notes yet. Add an anime above!</p>'; return; }
+  div.innerHTML = state.notes.map((n,i)=>`<span class="note-chip" style="background:${COLORS[i%COLORS.length]}">${n}<span class="x" onclick="removeNote(${i})">✕</span></span>`).join('');
+}
+
+let triviaPool = [], triviaIndex = 0, triviaScore = 0;
+function vaOf(a){ const m=(a.va.split(',')[0]||'').match(/^(.+?) as (.+)$/); return m?{actor:m[1].trim(),role:m[2].trim()}:null; }
+function shuf(a){ return a.sort(()=>0.5-Math.random()); }
+function pickWrong(list,correct,n){ return shuf([...new Set(list.filter(x=>x!==correct))]).slice(0,n); }
+function genStudioQ(a){ return {q:'Which studio animated "'+a.n+'"?',opts:shuf([a.st,...pickWrong(ANIME.map(x=>x.st),a.st,3)]),a:a.st}; }
+function genYearQ(a){ const ys=shuf([a.y-3,a.y-2,a.y-1,a.y+1,a.y+2,a.y+3].filter(y=>y<=2026)).slice(0,3).map(String); return {q:'In which year did "'+a.n+'" first release?',opts:shuf([String(a.y),...ys]),a:String(a.y)}; }
+function genVAQ(a){ const v=vaOf(a); if(!v) return null; const actors=ANIME.map(x=>{const y=vaOf(x);return y&&y.actor;}).filter(Boolean); const w=pickWrong(actors,v.actor,3); if(w.length<3) return null; return {q:'Who voices '+v.role+' in "'+a.n+'" (Japanese)?',opts:shuf([v.actor,...w]),a:v.actor}; }
+function buildTriviaPool(){
+  const pool=[];
+  ANIME.forEach(a=>{ const m=genMissingQ(a); pool.push({q:m.q,opts:m.opts,a:m.a}); pool.push(genStudioQ(a)); pool.push(genYearQ(a)); const v=genVAQ(a); if(v) pool.push(v); });
+  QUOTE_Q.forEach(x=>pool.push({q:x.q,opts:shuf([x.a,...pickWrong(ANIME.map(a=>a.n),x.a,3)]),a:x.a}));
+  return pool;
+}
+function startTrivia(){
+  triviaPool=shuf(buildTriviaPool()).slice(0,10); triviaIndex=0; triviaScore=0;
+  renderTrivia(); showScreen('s-trivia');
+}
+function renderTrivia(){
+  const dots = document.getElementById('triviaDots');
+  dots.innerHTML = triviaPool.map((_,i)=>`<div class="dot ${i===triviaIndex?'active':''}"></div>`).join('');
+  const item = triviaPool[triviaIndex];
+  document.getElementById('triviaQ').textContent = item.q;
+  const div = document.getElementById('triviaOptions'); div.innerHTML='';
+  item.opts.forEach(o=>{
+    const el = document.createElement('div'); el.className='qopt'; el.textContent=o;
+    el.onclick=()=>answerTrivia(el,o,item.a);
+    div.appendChild(el);
+  });
+}
+function answerTrivia(el,picked,correct){
+  document.querySelectorAll('.qopt').forEach(q=>q.onclick=null);
+  if(picked===correct){ el.classList.add('correct'); triviaScore++; SFX.ok(); }
+  else{ el.classList.add('wrong'); SFX.bad(); document.querySelectorAll('.qopt').forEach(q=>{ if(q.textContent===correct) q.classList.add('correct'); }); }
+  setTimeout(()=>{
+    triviaIndex++;
+    if(triviaIndex>=triviaPool.length){ document.getElementById('scoreNum').textContent=`${triviaScore}/${triviaPool.length}`; showScreen('s-trivia-result'); if(triviaScore>=7){ SFX.win(); confetti(); } }
+    else renderTrivia();
+  },900);
+}
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+function copyFallback(text){
+  const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+}
+window.addEventListener('popstate', e=>{ const id = e.state && e.state.s; if(id) showScreen(id,true); });
+
+
+const LOGO="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOmVjOTBhZDk3LThiMGMtNDlkYS1hZTdhLTVjNDFkMzQwM2JkMgAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNokSn3cCel5k/GrpUXRym3UQAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6YTNkZmM2MGItN2E1ZC00MDFmLTgxZmMtZDdkMmUwNzI2NWQ3bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaOCuKFs1XjkAODJStLt8LpkAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYICMP4YYy/kbw+4hv0v1egSBHNP676Vrt420PhcJ4lH2PpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2ixnnTMsZYSclS4HDFtVhKzAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFggLAkUvawmJX619VLNcjuSkqaBTKw6BNJ0QN0D7wuxr9FkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTplYzkwYWQ5Ny04YjBjLTQ5ZGEtYWU3YS01YzQxZDM0MDNiZDIvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoxMmJiYzZjYS1jM2UxLTQxOWMtOTk4ZS1kOGU2ZjQ2NGQyYjdyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggIw/hhjL+RvD7iG/S/V6BIEc0/rvpWu3jbQ+FwniUfY+iY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIEfTuw8RAOZJ2CVmcn0dIw5GbEIrDgzeMp7FbG0gMUD9omN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIJjsu1uom/tHQhl6NFROEb0/EzHuUQJiDeFgB4c0MYNjdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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";
+const REPO="__REPO__", BUILD="__BUILD__";
+const IS_APP=!REPO.startsWith('__');
+const VERSION=IS_APP?('1.'+BUILD):'dev';
+
+/* ---------- sounds (generated with Web Audio, no files needed) ---------- */
+let audioCtx=null;
+function beep(freq,dur,type,vol,when){
+  if(state.sound===false) return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const t=audioCtx.currentTime+(when||0), o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type||'sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol||0.12,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+dur+0.03);
+  }catch(e){}
+}
+const SFX={
+  tap(){beep(520,.06,'triangle',.07);},
+  ok(){beep(660,.12,'sine',.13); beep(880,.16,'sine',.13,.1);},
+  bad(){beep(200,.24,'sawtooth',.08);},
+  win(){[523,659,784,1047].forEach((f,i)=>beep(f,.2,'sine',.13,i*.11));},
+  sparkle(){[1200,1600,2000].forEach((f,i)=>beep(f,.1,'sine',.06,i*.07));},
+  drum(){for(let i=0;i<8;i++) beep(110+i*8,.09,'triangle',.08,i*.2);}
+};
+document.addEventListener('click',e=>{ if(e.target.closest('button,.choice,.chip,.menu-item,.navbtn,.ep,.opt,.linkbtn,.card-actions a,.stars span')) SFX.tap(); },true);
+function confetti(){
+  const cols=['#e8536e','#7c5cd4','#3fb371','#e0a02e','#3b8de0'], box=document.createElement('div'); box.className='confetti';
+  for(let i=0;i<46;i++){ const s=document.createElement('i'); s.style.left=Math.random()*100+'%'; s.style.background=cols[i%cols.length]; s.style.animationDelay=(Math.random()*0.4)+'s'; s.style.animationDuration=(1.6+Math.random()*1.2)+'s'; box.appendChild(s); }
+  document.body.appendChild(box); setTimeout(()=>box.remove(),3400);
+}
+
+/* ---------- sharing ---------- */
+async function shareText(text){
+  try{
+    const cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Share;
+    if(cap){ await cap.share({title:'Anime Partner',text:text,dialogTitle:'Share'}); return; }
+    if(navigator.share){ await navigator.share({title:'Anime Partner',text:text}); return; }
+    throw new Error('no-share');
+  }catch(e){
+    if(e&&(e.name==='AbortError'||/cancel/i.test(String(e.message||e)))) return;
+    copyFallback(text); try{ if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{}); }catch(_){}
+    toast('Copied! Paste it to your anime partner.');
+  }
+}
+function shareApp(){
+  const picks=currentBatch.slice(0,5).join(', ');
+  shareText('My Anime Partner picks: '+(picks||'lots of great anime')+'. Find your next anime with Anime Partner!');
+}
+
+/* ---------- theme, settings, reminders, updates ---------- */
+function applyTheme(){
+  const r=document.documentElement, t=state.theme||'system';
+  if(t==='light'||t==='dark') r.setAttribute('data-theme',t); else r.removeAttribute('data-theme');
+  const dark=t==='dark'||(t==='system'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  const m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content',dark?'#171320':'#7c5cd4');
+}
+function setTheme(t){ state.theme=t; save(); applyTheme(); renderSettings(); }
+function LN(){ return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications; }
+async function applyReminder(){
+  const ln=LN(); if(!ln) return false;
+  try{
+    await ln.cancel({notifications:[{id:1}]});
+    if(!state.reminder.on) return true;
+    const perm=await ln.requestPermissions(); if(perm.display!=='granted') return false;
+    const hm=(state.reminder.time||'20:00').split(':').map(Number);
+    await ln.schedule({notifications:[{id:1,title:'Anime Partner',body:"Time to watch some anime! Check today's challenge target.",schedule:{on:{hour:hm[0],minute:hm[1]},allowWhileIdle:true}}]});
+    return true;
+  }catch(e){ return false; }
+}
+async function toggleReminder(on){
+  state.reminder.on=on; save();
+  if(!LN()){ toast('Reminders work in the installed Android app.'); return; }
+  const ok=await applyReminder();
+  if(!ok&&on){ state.reminder.on=false; save(); const c=document.getElementById('remOn'); if(c) c.checked=false; toast('Notification permission is needed for reminders.'); }
+  else toast(on?'Daily reminder set':'Reminder turned off');
+}
+function setReminderTime(v){ state.reminder.time=v||'20:00'; save(); if(state.reminder.on) applyReminder(); }
+function toggleSound(on){ state.sound=on; save(); if(on) SFX.ok(); }
+function resetData(){
+  if(!confirm('Delete all your data (profile, list, notes, challenges)? This cannot be undone.')) return;
+  try{ localStorage.removeItem('animePartner'); }catch(e){}
+  const ln=LN(); if(ln){ try{ ln.cancel({notifications:[{id:1}]}); }catch(e){} }
+  location.reload();
+}
+function renderSettings(){
+  const th=state.theme||'system';
+  document.getElementById('settingsBody').innerHTML=
+   '<div class="card"><h3>Theme</h3><div class="seg">'+['system','light','dark'].map(t=>'<div class="opt '+(th===t?'on':'')+'" onclick="setTheme(\''+t+'\')">'+t.charAt(0).toUpperCase()+t.slice(1)+'</div>').join('')+'</div></div>'+
+   '<div class="card"><h3>Sound effects</h3><div class="row"><span>Play sounds</span><input type="checkbox" id="sndOn" '+(state.sound!==false?'checked':'')+' onchange="toggleSound(this.checked)" style="width:22px;height:22px;accent-color:var(--accent)"></div></div>'+
+   '<div class="card"><h3>Daily reminder</h3><div class="row"><span>Remind me to watch</span><input type="checkbox" id="remOn" '+(state.reminder.on?'checked':'')+' onchange="toggleReminder(this.checked)" style="width:22px;height:22px;accent-color:var(--accent)"></div>'+
+   '<div class="row"><span>Time</span><input type="time" id="remTime" value="'+state.reminder.time+'" onchange="setReminderTime(this.value)" style="width:140px"></div>'+
+   '<p class="meta">Android asks for notification permission the first time.</p></div>'+
+   '<div class="card"><h3>App</h3><p class="meta">Version '+VERSION+'</p><button class="btn ghost" style="margin-top:6px" onclick="checkUpdate(true)">Check for updates</button><button class="btn ghost" style="margin-top:10px" onclick="resetData()">Reset all data</button></div>';
+}
+function showUpdate(url,n){ const b=document.getElementById('updatebar'); b.innerHTML='<span>🚀 New version available (1.'+n+')</span><a href="'+url+'">Download</a>'; b.classList.add('show'); }
+async function checkUpdate(manual){
+  if(!IS_APP){ if(manual) toast('Update check works in the installed app.'); return; }
+  try{
+    const r=await fetch('https://api.github.com/repos/'+REPO+'/releases/latest'); if(!r.ok) throw new Error('bad');
+    const j=await r.json(); const n=parseInt(String(j.tag_name||'').replace(/\D/g,''),10);
+    state.lastUpdateCheck=Date.now(); save();
+    if(n>parseInt(BUILD,10)) showUpdate(j.html_url,n); else if(manual) toast('You have the latest version.');
+  }catch(e){ if(manual) toast('Could not check for updates. Check your internet.'); }
+}
+
+/* ---------- legal + FAQ + sites ---------- */
+const TERMS_HTML='<h4>1. About the app</h4>Anime Partner is a free entertainment app that recommends anime, tracks your progress and offers quizzes and games.<h4>2. Age</h4>You must be 18 or older to use the app.<h4>3. No streaming</h4>The app does not host, stream or distribute anime. Links open third-party official services, which have their own terms, prices and regional availability.<h4>4. Your data</h4>Your name, age, progress, notes and settings are stored only on your device. We do not collect or upload them. Removing the app or clearing its data deletes them. The internet is used only when you open a link or check for updates.<h4>5. Fun features</h4>Quizzes, recommendations and the anime match are for entertainment only.<h4>6. Trademarks</h4>Anime titles, characters and studio names belong to their owners. Anime Partner is a fan-made app and is not affiliated with any studio or streaming service.<h4>7. No warranty</h4>The app is provided "as is". Details such as ratings, dates and cast may contain errors.<h4>8. Changes</h4>These terms may change with app updates. Continuing to use the app means you accept them.<h4>9. Pictures</h4>Anime pictures are loaded from the AniList service when you are online and belong to their owners.<h4>10. Contact</h4>Questions? Message us on Instagram: @shin.ali96.';
+const FAQ=[
+["What is Anime Partner?","A free app that recommends anime, tracks your episodes, sets watching challenges and offers quizzes, Japanese phrases and a fun anime match game."],
+["Does it stream anime?","No. Anime Partner does not host or stream anime. The Where to watch page links to official services. Free ones show ads and availability differs by country."],
+["Where is my data stored?","Only on your phone: profile, list, notes, challenges and settings. Nothing is uploaded. Removing the app or clearing its data deletes it."],
+["How do challenges work?","Add anime to My List, then start a challenge: finish one anime or watch a number of episodes in a set number of days. Tick episodes in My List and your progress, daily target and streak update automatically."],
+["How do reminders work?","Turn on Daily reminder in Settings and pick a time. Android asks for notification permission once."],
+["How does the anime match work?","You answer nine questions about your personality and choices. Your answers, plus a small twist from your name and age, are scored against adult characters. It is just for fun."],
+["How do I update the app?","When a new version is out, a banner appears at the top. Tap Download, then open the new APK and install it over the old one. You can also use Settings > Check for updates. Your data stays."],
+["Why is the app 18+?","It suggests mature-rated anime and links to third-party services, so it is meant for adults."],
+["I found a bug or have an idea","Open More > Contact us and message us on Instagram."]
+];
+const SITES=[
+{n:"Tubi",t:"free",d:"Free with ads. Large library of anime series and movies, many dubbed. No account needed. Availability varies by country.",u:"https://tubitv.com"},
+{n:"Pluto TV",t:"free",d:"Free with ads. On-demand anime plus 24/7 live anime channels. Availability varies by country.",u:"https://pluto.tv"},
+{n:"RetroCrush",t:"free",d:"Free with ads. Classic anime from the 70s to the early 2000s. A free account may be needed.",u:"https://www.retrocrush.tv"},
+{n:"Muse Asia (YouTube)",t:"free",d:"Official YouTube channel with free, ad-supported licensed anime. Mainly for Asia; region locks may apply.",u:"https://www.youtube.com/@MuseAsia"},
+{n:"Ani-One Asia (YouTube)",t:"free",d:"Official YouTube channel with free, ad-supported simulcasts and series. Mainly for Asia; region locks may apply.",u:"https://www.youtube.com/@AniOneAsia"},
+{n:"Plex",t:"free",d:"Free ad-supported movies and shows, including some anime. Availability varies by country.",u:"https://www.plex.tv"},
+{n:"Bilibili",t:"free",d:"Licensed anime on the global site, many titles free with ads. Some content needs a paid membership.",u:"https://www.bilibili.tv"},
+{n:"iQIYI",t:"free",d:"Licensed anime, many titles free with ads in supported regions. Some content is VIP only.",u:"https://www.iq.com"},
+{n:"Crunchyroll",t:"paid",d:"The biggest anime library. A subscription is needed (its ad-supported free tier ended at the start of 2026); a short free trial may be offered.",u:"https://www.crunchyroll.com"},
+{n:"HIDIVE",t:"paid",d:"Subscription anime service, strong on niche and dubbed titles. A short free trial may be offered.",u:"https://www.hidive.com"},
+{n:"Netflix",t:"paid",d:"Subscription service with a growing catalog of anime series, originals and movies.",u:"https://www.netflix.com"},
+{n:"Prime Video",t:"paid",d:"Subscription or rental anime series and movies. The catalog depends on your country.",u:"https://www.primevideo.com"}
+];
+function renderWatch(){
+  document.getElementById('watchList').innerHTML=SITES.map(s=>'<div class="card"><span class="badge '+s.t+'">'+(s.t==='free'?'Free with ads':'Subscription')+'</span><h3>'+s.n+'</h3><div class="desc" style="margin-top:6px">'+s.d+'</div><a class="linkbtn" href="'+s.u+'">Open</a></div>').join('');
+}
+
+/* ---------- terms flow, feedback ---------- */
+function acceptTerms(){ state.agreed=true; save(); SFX.sparkle(); showScreen('s-welcome'); }
+let rating=0;
+function setStars(n){ rating=n; document.querySelectorAll('#stars span').forEach((s,i)=>s.classList.toggle('on',i<n)); }
+function copyFeedback(){
+  const t=document.getElementById('fbText').value.trim();
+  const text='Anime Partner review: '+'★'.repeat(rating)+'☆'.repeat(5-rating)+(t?' - '+t:'');
+  copyFallback(text); try{ if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{}); }catch(_){}
+  toast('Review copied! Paste it in Instagram.');
+}
+
+/* ---------- challenges ---------- */
+function fmt(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function todayKey(){ return fmt(new Date()); }
+function watchedCount(t){ return Array.isArray(t.watched)?t.watched.filter(Boolean).length:(t.watched||0); }
+function totalWatched(){ return state.trackerList.reduce((s,t)=>s+watchedCount(t),0); }
+function logActivity(delta){ const k=todayKey(); state.activity[k]=Math.max(0,(state.activity[k]||0)+delta); }
+function streak(){ let s=0; const d=new Date(); if(!(state.activity[fmt(d)]>0)) d.setDate(d.getDate()-1); while(state.activity[fmt(d)]>0){ s++; d.setDate(d.getDate()-1); } return s; }
+function chStats(c){
+  const start=new Date(c.start+'T00:00:00'), now=new Date(), t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const left=c.days-Math.floor((t0-start)/86400000); let total,done;
+  if(c.type==='anime'){ const t=state.trackerList.find(x=>x.n===c.anime); if(!t) return null; total=t.total; done=watchedCount(t); }
+  else{ total=c.target; done=Math.max(0,totalWatched()-c.base); }
+  const remaining=Math.max(0,total-done);
+  return {left,total,done,remaining,complete:remaining===0,expired:left<=0&&remaining>0,daily:left>0?Math.ceil(remaining/left):remaining};
+}
+function chTypeChange(){ const t=document.getElementById('chType').value; document.getElementById('chAnimeWrap').style.display=t==='anime'?'block':'none'; document.getElementById('chEpWrap').style.display=t==='episodes'?'block':'none'; }
+function renderChallenge(){
+  const today=state.activity[todayKey()]||0;
+  document.getElementById('chalTop').innerHTML='<span class="streak">🔥 '+streak()+'-day streak</span><span class="streak">📺 '+today+' episode'+(today===1?'':'s')+' today</span>';
+  const open=state.trackerList.filter(t=>watchedCount(t)<t.total);
+  document.getElementById('chAnime').innerHTML=open.length?open.map(t=>'<option>'+t.n+'</option>').join(''):'<option value="">Add anime to My List first</option>';
+  chTypeChange();
+  const list=document.getElementById('chalList');
+  if(!state.challenges.length){ list.innerHTML='<p class="empty">No challenges yet. Start one above!</p>'; return; }
+  list.innerHTML=state.challenges.map((c,i)=>{
+    const title=c.type==='anime'?('Finish '+c.anime):('Watch '+c.target+' episodes'), s=chStats(c);
+    if(!s) return '<div class="card"><h3>'+title+'</h3><p class="meta">This anime was removed from your list.</p><button class="btn ghost" style="margin-top:8px" onclick="removeChallenge('+i+')">Remove</button></div>';
+    if(s.complete&&!c.celebrated){ c.celebrated=true; save(); SFX.win(); confetti(); }
+    const pct=Math.min(100,Math.round(s.done/s.total*100));
+    const status=s.complete?'🎉 Challenge complete!':(s.expired?'⏰ Time is up. Try again with more days.':'Watch <b>'+s.daily+'</b> episode'+(s.daily===1?'':'s')+' per day · '+s.left+' day'+(s.left===1?'':'s')+' left · today '+today+'/'+s.daily);
+    return '<div class="card"><h3>'+title+'</h3><div class="meta">'+s.done+' / '+s.total+' episodes · '+c.days+'-day challenge</div><div class="bar"><div class="bar-fill" style="width:'+pct+'%"></div></div><div class="desc">'+status+'</div><button class="btn ghost" style="margin-top:0" onclick="removeChallenge('+i+')">Remove</button></div>';
+  }).join('');
+}
+function addChallenge(){
+  const type=document.getElementById('chType').value, days=Math.max(1,parseInt(document.getElementById('chDays').value,10)||1);
+  if(type==='anime'){ const a=document.getElementById('chAnime').value; if(!a){ toast('Add an anime to My List first.'); return; } state.challenges.push({type:type,anime:a,days:days,start:todayKey()}); }
+  else{ const n=parseInt(document.getElementById('chEps').value,10); if(!n||n<1){ toast('Enter how many episodes.'); return; } state.challenges.push({type:type,target:n,days:days,start:todayKey(),base:totalWatched()}); }
+  save(); SFX.ok(); renderChallenge(); toast('Challenge started!');
+}
+function removeChallenge(i){ state.challenges.splice(i,1); save(); renderChallenge(); }
+
+/* ---------- anime match (mind-game quiz, adult characters only) ---------- */
+const MATCH_F=[
+{n:"Makima",a:"Chainsaw Man",t:["DARK","SMART","BOLD"]},{n:"Yor Forger",a:"Spy x Family",t:["BOLD","KIND","LOYAL"]},
+{n:"Frieren",a:"Frieren: Beyond Journey's End",t:["SMART","KIND","DARK"]},{n:"Motoko Kusanagi",a:"Ghost in the Shell",t:["SMART","BOLD","DARK"]},
+{n:"Faye Valentine",a:"Cowboy Bebop",t:["FUN","BOLD","DARK"]},{n:"Riza Hawkeye",a:"Fullmetal Alchemist: Brotherhood",t:["LOYAL","SMART","BOLD"]},
+{n:"Olivier Armstrong",a:"Fullmetal Alchemist: Brotherhood",t:["BOLD","DARK","LOYAL"]},{n:"Nico Robin",a:"One Piece",t:["SMART","DARK","KIND"]},
+{n:"Boa Hancock",a:"One Piece",t:["BOLD","DARK","LOYAL"]},{n:"Bulma",a:"Dragon Ball Z",t:["SMART","FUN","BOLD"]},
+{n:"Tsunade",a:"Naruto",t:["BOLD","KIND","LOYAL"]},{n:"Misato Katsuragi",a:"Neon Genesis Evangelion",t:["FUN","BOLD","LOYAL"]},
+{n:"Akane Tsunemori",a:"Psycho-Pass",t:["SMART","KIND","LOYAL"]},{n:"Isabella",a:"The Promised Neverland",t:["LOYAL","DARK","KIND"]},
+{n:"Yoruichi Shihouin",a:"Bleach",t:["FUN","BOLD","LOYAL"]},{n:"Fujiko Mine",a:"Lupin the Third",t:["FUN","SMART","DARK"]},
+{n:"Revy",a:"Black Lagoon",t:["BOLD","DARK","FUN"]}
+];
+const MATCH_M=[
+{n:"Madara Uchiha",a:"Naruto",t:["DARK","BOLD","SMART"]},{n:"Itachi Uchiha",a:"Naruto",t:["DARK","LOYAL","SMART"]},
+{n:"Sasuke Uchiha (adult)",a:"Naruto",t:["DARK","BOLD","LOYAL"]},{n:"Levi Ackerman",a:"Attack on Titan",t:["BOLD","LOYAL","DARK"]},
+{n:"Satoru Gojo",a:"Jujutsu Kaisen",t:["FUN","BOLD","SMART"]},{n:"Ryomen Sukuna",a:"Jujutsu Kaisen",t:["DARK","BOLD","FUN"]},
+{n:"Kento Nanami",a:"Jujutsu Kaisen",t:["SMART","LOYAL","KIND"]},{n:"Loid Forger",a:"Spy x Family",t:["SMART","LOYAL","KIND"]},
+{n:"Spike Spiegel",a:"Cowboy Bebop",t:["FUN","BOLD","DARK"]},{n:"Vash the Stampede",a:"Trigun",t:["KIND","FUN","LOYAL"]},
+{n:"Roy Mustang",a:"Fullmetal Alchemist: Brotherhood",t:["BOLD","SMART","LOYAL"]},{n:"L",a:"Death Note",t:["SMART","FUN","DARK"]},
+{n:"Kakashi Hatake",a:"Naruto",t:["SMART","LOYAL","FUN"]},{n:"Guts",a:"Berserk",t:["BOLD","DARK","LOYAL"]},
+{n:"Trafalgar Law",a:"One Piece",t:["DARK","SMART","BOLD"]},{n:"Kenshin Himura",a:"Rurouni Kenshin",t:["KIND","LOYAL","BOLD"]},
+{n:"Gintoki Sakata",a:"Gintama",t:["FUN","LOYAL","BOLD"]},{n:"Saitama",a:"One Punch Man",t:["FUN","KIND","BOLD"]},
+{n:"Toji Fushiguro",a:"Jujutsu Kaisen",t:["DARK","BOLD","SMART"]},{n:"Lupin the Third",a:"Lupin the Third",t:["FUN","SMART","BOLD"]}
+];
+const MATCH_Q=[
+{q:"You wake up in a locked room with a stranger. Your first move?",o:[{t:"Take charge and give orders",p:{BOLD:2,SMART:1}},{t:"Calmly study the room for clues",p:{SMART:2,DARK:1}},{t:"Crack a joke to ease the tension",p:{FUN:2,KIND:1}},{t:"Check the stranger is okay first",p:{KIND:2,LOYAL:1}}]},
+{q:"Pick a power you'd secretly want:",o:[{t:"Reading minds",p:{SMART:2,DARK:1}},{t:"Unstoppable strength",p:{BOLD:2}},{t:"Making anyone smile",p:{KIND:1,FUN:2}},{t:"Never being betrayed",p:{LOYAL:2,DARK:1}}]},
+{q:"A friend lies to protect you. Your reaction?",o:[{t:"Forgive instantly, they meant well",p:{KIND:2,LOYAL:1}},{t:"Confront them. No lies allowed",p:{BOLD:2,SMART:1}},{t:"Quietly test them again later",p:{DARK:2,SMART:1}},{t:"Laugh it off and change the subject",p:{FUN:2}}]},
+{q:"Your ideal night?",o:[{t:"Rooftop under the stars, deep talk",p:{SMART:1,KIND:1,LOYAL:1}},{t:"A wild adventure with no plan",p:{FUN:2,BOLD:1}},{t:"Alone with a good story",p:{DARK:1,SMART:2}},{t:"A big party with everyone",p:{FUN:2,KIND:1}}]},
+{q:"If you had to be a villain for a day, you'd be:",o:[{t:"A mastermind pulling strings",p:{SMART:2,DARK:2}},{t:"A feared warrior",p:{BOLD:2,DARK:1}},{t:"A charming trickster",p:{FUN:2,SMART:1}},{t:"I'd refuse. Heroes only",p:{KIND:2,LOYAL:1}}]},
+{q:"What do you value most in a partner?",o:[{t:"Loyalty, even in the dark",p:{LOYAL:3}},{t:"Strength to protect me",p:{BOLD:2,LOYAL:1}},{t:"A mind that keeps up with mine",p:{SMART:3}},{t:"Someone who makes life fun",p:{FUN:3}}]},
+{q:"Someone hurts a person you love. You:",o:[{t:"Make them pay, no mercy",p:{DARK:2,BOLD:1}},{t:"Stay by your loved one's side",p:{LOYAL:2,KIND:1}},{t:"Plan something clever and quiet",p:{SMART:2,DARK:1}},{t:"Try to talk it out",p:{KIND:2}}]},
+{q:"Pick a vibe:",o:[{t:"Cool and unreadable",p:{DARK:2,SMART:1}},{t:"Fierce and confident",p:{BOLD:2,FUN:1}},{t:"Warm and reliable",p:{KIND:1,LOYAL:2}},{t:"Chaotic and unpredictable",p:{FUN:2,DARK:1}}]},
+{q:"Which line sounds most like you?",o:[{t:"Actions speak louder than words",p:{BOLD:1,LOYAL:1}},{t:"Knowledge is power",p:{SMART:2}},{t:"Kindness is strength",p:{KIND:2}},{t:"Rules are made to be broken",p:{FUN:1,DARK:1,BOLD:1}}]}
+];
+let matchState=null, lastMatchText='';
+function openMatch(){ document.getElementById('matchIntro').style.display='block'; document.getElementById('matchQuiz').style.display='none'; document.getElementById('matchResult').style.display='none'; showScreen('s-match'); }
+function matchStart(target){ matchState={target:target,i:0,score:{BOLD:0,KIND:0,SMART:0,FUN:0,DARK:0,LOYAL:0}}; document.getElementById('matchIntro').style.display='none'; document.getElementById('matchQuiz').style.display='block'; renderMatchQ(); }
+function renderMatchQ(){
+  const q=MATCH_Q[matchState.i];
+  document.getElementById('matchDots').innerHTML=MATCH_Q.map((_,i)=>'<div class="dot '+(i===matchState.i?'active':'')+'"></div>').join('');
+  document.getElementById('matchQ').textContent=q.q;
+  const box=document.getElementById('matchOpts'); box.innerHTML='';
+  shuf(q.o.slice()).forEach(o=>{ const el=document.createElement('div'); el.className='qopt'; el.textContent=o.t;
+    el.onclick=()=>{ for(const k in o.p) matchState.score[k]+=o.p[k]; matchState.i++; if(matchState.i>=MATCH_Q.length) matchFinish(); else renderMatchQ(); };
+    box.appendChild(el); });
+}
+function computeMatch(score,target,name,age){
+  const s=Object.assign({},score);
+  if(age<25) s.FUN+=1; else if(age<35) s.SMART+=1; else s.LOYAL+=1;
+  const seed=[...(name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)+age;
+  const pool=target==='F'?MATCH_F:target==='M'?MATCH_M:MATCH_F.concat(MATCH_M), W=[3,2,1];
+  const scored=pool.map(c=>({c:c,v:c.t.reduce((a,t,i)=>a+s[t]*W[i],0)})).sort((a,b)=>b.v-a.v);
+  const cand=scored.filter(x=>x.v>=scored[0].v-2), pick=cand[seed%cand.length];
+  const top=Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
+  const total=Object.values(s).reduce((a,b)=>a+b,0)||1;
+  return {c:pick.c,top:top,pct:Math.max(75,Math.min(98,Math.round(70+(pick.v/(total*3))*35)))};
+}
+function matchFinish(){
+  document.getElementById('matchQuiz').style.display='none';
+  const box=document.getElementById('matchResult'); box.style.display='block';
+  box.innerHTML='<div class="reading"><div class="orb">🔮</div><p>Reading your mind...</p></div>'; SFX.drum();
+  setTimeout(()=>{
+    const r=computeMatch(matchState.score,matchState.target,state.name,state.age||20), c=r.c;
+    const ADJ={BOLD:'bold',KIND:'warm-hearted',SMART:'sharp-minded',FUN:'playful',DARK:'mysterious',LOYAL:'fiercely loyal'};
+    const color=COLORS[c.n.length%COLORS.length];
+    lastMatchText='My anime match on Anime Partner: '+c.n+' from '+c.a+' ('+r.pct+'% match)! Who is yours?';
+    box.innerHTML='<div class="card matchcard"><div class="cover" style="background:'+color+';font-size:2.4rem">'+c.n[0]+'</div><div class="big">'+c.n+'</div><div class="meta">from '+c.a+'</div><div class="tags">'+c.t.map(t=>'<span class="tag">'+ADJ[t]+'</span>').join('')+'</div><div class="desc">You come across as '+ADJ[r.top[0]]+' and '+ADJ[r.top[1]]+'. '+c.n+' shares that energy, so this is your match: <b>'+r.pct+'%</b>.</div><p class="meta">Just for fun. Your answers, name and age shape the result. Adult characters only.</p><button class="btn" style="margin-top:8px" onclick="shareText(lastMatchText)">📤 Share my match</button><a class="linkbtn ghost" href="https://myanimelist.net/anime.php?q='+encodeURIComponent(c.a)+'">🔗 View the anime</a><button class="btn ghost" style="margin-top:10px" onclick="openMatch()">Try again</button></div>';
+    SFX.win(); confetti();
+  },1900);
+}
+
+(function bootstrap(){
+  document.querySelectorAll('img.logo').forEach(i=>{ i.src=LOGO; });
+  document.getElementById('termsBox').innerHTML=TERMS_HTML; document.getElementById('termsBox2').innerHTML=TERMS_HTML;
+  document.getElementById('faqBody').innerHTML=FAQ.map(f=>'<details><summary>'+f[0]+'</summary><p>'+f[1]+'</p></details>').join('');
+  document.getElementById('stars').innerHTML=[1,2,3,4,5].map(n=>'<span onclick="setStars('+n+')">★</span>').join('');
+  document.getElementById('verText').textContent='v'+VERSION;
+  applyTheme();
+  let first='s-splash';
+  if(state.agreed) first='s-welcome';
+  if(state.agreed && state.name && state.age>=18){
+    document.getElementById('topbar').classList.add('show');
+    document.getElementById('greet').textContent="Welcome back, "+state.name+"!";
+    const hasProfile=Object.values(state.genreScore||{}).some(v=>v>0);
+    if(hasProfile){ state.shownNames=[]; renderResults(); document.getElementById('navbar').classList.add('show'); first='s-results'; }
+    else first='s-usertype';
+  }
+  try{ history.replaceState({s:first},''); }catch(e){}
+  showScreen(first,true);
+  if(state.reminder&&state.reminder.on) applyReminder();
+  if(IS_APP && Date.now()-(state.lastUpdateCheck||0)>6*3600*1000) checkUpdate(false);
+})();
+</script>
+</body>
+</html>
